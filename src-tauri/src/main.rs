@@ -127,7 +127,7 @@ fn save_settings(app: tauri::AppHandle, state: State<SharedState>, settings: Set
         let old_outer=w.outer_size().map_err(|e|e.to_string())?;
         let old_inner=w.inner_size().map_err(|e|e.to_string())?;
         let scale=w.scale_factor().unwrap_or(1.);
-        let width=if settings.mini {560.} else {340.}; let height=if settings.mini {76.} else {680.};
+        let width=if settings.mini {560.} else {340.}; let height=if settings.mini {76.} else {540.};
         w.set_min_size(None::<tauri::LogicalSize<f64>>).map_err(|e|e.to_string())?;
         w.set_max_size(None::<tauri::LogicalSize<f64>>).map_err(|e|e.to_string())?;
         w.set_size(tauri::LogicalSize::new(width,height)).map_err(|e|e.to_string())?;
@@ -152,18 +152,18 @@ async fn show_gadget(app: tauri::AppHandle, state: State<'_, SharedState>) -> Re
     if let Some(w)=app.get_webview_window("gadget") { w.show().map_err(|e|e.to_string())?; w.set_focus().map_err(|e|e.to_string())?; return Ok(()); }
     let settings=state.lock().map_err(|e|e.to_string())?.settings.clone();
     let w=WebviewWindowBuilder::new(&app, "gadget", WebviewUrl::App("index.html?view=gadget".into()))
-        .title("AERIS — ガジェット").inner_size(if settings.mini {560.} else {340.}, if settings.mini {76.} else {680.})
+        .title("AERIS — ガジェット").inner_size(if settings.mini {560.} else {340.}, if settings.mini {76.} else {540.})
         // Fixed min/max retains the modern frame while avoiding tao's Windows
         // white-border bug with resizable(false) + decorations(false).
         .resizable(true).maximizable(false)
-        .min_inner_size(if settings.mini {560.} else {340.}, if settings.mini {76.} else {680.})
-        .max_inner_size(if settings.mini {560.} else {340.}, if settings.mini {76.} else {680.})
+        .min_inner_size(if settings.mini {560.} else {340.}, if settings.mini {76.} else {540.})
+        .max_inner_size(if settings.mini {560.} else {340.}, if settings.mini {76.} else {540.})
         .decorations(false).transparent(true).theme(Some(tauri::Theme::Dark)).skip_taskbar(true).always_on_top(settings.pinned)
         .background_color(tauri::window::Color(0,0,0,0)).build().map_err(|e|e.to_string())?;
     if let Ok(Some(m))=w.current_monitor() {
         let scale=m.scale_factor(); let size=m.size(); let pos=m.position();
         let width=if settings.mini {560.} else {340.};
-        let height=if settings.mini {76.} else {680.};
+        let height=if settings.mini {76.} else {540.};
         let top=60_f64.min((size.height as f64/scale-height-48.).max(0.));
         let _=w.set_position(tauri::LogicalPosition::new((pos.x as f64 + size.width as f64)/scale-width-28., pos.y as f64/scale+top));
     }
