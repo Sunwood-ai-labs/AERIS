@@ -51,7 +51,7 @@ const banner=`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" 
 <g transform="translate(76 80) scale(2.8)">${mark}</g>
 <text x="314" y="178" fill="#edf8fc" font-family="Segoe UI, sans-serif" font-weight="600" font-size="77" letter-spacing="13">AERIS</text>
 <text x="319" y="223" fill="#a7c7d6" font-family="Segoe UI, sans-serif" font-size="21" letter-spacing="2">A lighter view of your desktop.</text>
-<text x="82" y="306" fill="#6da6bc" font-family="Segoe UI, sans-serif" font-size="12" letter-spacing="3">WINDOWS SYSTEM MONITOR · TAURI + RUST</text>
+<text x="82" y="306" fill="#6da6bc" font-family="Segoe UI, sans-serif" font-size="12" letter-spacing="3">DESKTOP SYSTEM MONITOR · TAURI + RUST</text>
 <g transform="translate(1010 97) scale(2)" opacity=".07">${mono.replaceAll('currentColor','#9beaff')}</g>
 </svg>\n`;
 write('docs/assets/aeris-banner.svg', banner);
