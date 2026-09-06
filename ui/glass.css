@@ -1,0 +1,46 @@
+/* The native window AND WebView background are clear. Only surfaces have alpha;
+   text, graphs and input targets keep their normal opacity. No blur/render loop. */
+:root, body, body.gadget { background: transparent; }
+:root { --muted: #aec0d1; --line: #8eacc330; }
+.app-shell, .gadget-shell {
+  position: relative;
+  isolation: isolate;
+  --glass-opacity: .70;
+  background: rgba(5, 14, 25, var(--glass-opacity));
+  border-color: #a2c8df55;
+}
+.wallpaper { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.wallpaper img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s ease; }
+.wallpaper img.active { opacity: 1; }
+.gadget-shell .wallpaper img { object-position: 40% center; }
+.mini .wallpaper img { object-position: center 64%; }
+.titlebar, .app-shell > footer { background: #030b163b; }
+.sidebar { background: #04101c33; }
+.panel { background: linear-gradient(135deg, #0b1a2b33, #09162520); border-color: #8eacc333; }
+.nav-button.active { background: linear-gradient(100deg, #2b668455, #15374b33); }
+.live-control, .search-box, .segmented { background: #06121f55; }
+thead { background: #0b1b2deb; }
+tr[data-pid]:hover { background: #21415b88; }
+tr.selected { background: #23506a99; }
+.memory-track { background: #17324777; }
+.g-process { background: #08162330; }
+.machine, .processor-info, .metric-caption, .setting-row p, .appearance-hint { color: #a9bed0; }
+.axis-y, .axis-x, .chart-foot, .network-note, .sidebar-label, .version { color: #93adc2; }
+.appearance-settings { margin: 23px 0 0; padding: 22px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.appearance-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.appearance-title h3 { margin-top: 8px; font-size: 16px; }
+.appearance-title > span { font-size: 10px; }
+.wallpaper-picker { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 18px 0; }
+.wallpaper-option { min-width: 0; padding: 4px; border: 1px solid #6687a24d; border-radius: 7px; background: #07152255; overflow: hidden; }
+.wallpaper-option img, .wallpaper-thumb { display: block; width: 100%; height: 66px; object-fit: cover; border-radius: 4px; }
+.wallpaper-option > span:last-child { display: block; margin: 9px 0 6px; font-size: 10px; white-space: nowrap; }
+.wallpaper-thumb { display: grid; place-items: center; font: 32px var(--number); color: var(--accent); background: linear-gradient(130deg, #1a55757d, #09162555); }
+.none-option .wallpaper-thumb { background: #11273a55; color: #afc7da; }
+.wallpaper-option.active { border-color: var(--accent); box-shadow: 0 0 0 1px #39cff533; background: #19436155; }
+.appearance-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+.appearance-controls label { display: block; font-size: 11px; color: #bfd1e0; }
+.appearance-controls output { float: right; font-family: var(--number); color: var(--accent); }
+.appearance-controls select { display: block; width: 100%; margin-top: 9px; padding: 6px 8px; }
+.appearance-controls input { display: block; width: 100%; margin: 17px 0 0; accent-color: var(--accent); cursor: pointer; }
+.appearance-hint { margin: 16px 0 0; font-size: 10px; line-height: 1.7; }
+@media (prefers-reduced-motion: reduce) { .wallpaper img { transition: none; } }

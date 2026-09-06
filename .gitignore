@@ -1,0 +1,16 @@
+node_modules/
+dist/
+src-tauri/target/
+tools/*.exe
+artifacts/*.log
+release/
+artifacts/
+src-tauri/gen/
+design/
+.env
+.env.*
+!.env.example
+*.log
+*.pdb
+.DS_Store
+Thumbs.db

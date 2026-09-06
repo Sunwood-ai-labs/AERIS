@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">AERIS</title><desc id="desc">A lighter view of your desktop. Translucent Windows system monitor.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#07111e"/><stop offset="1" stop-color="#102b3c"/></linearGradient></defs>
+  <rect width="1200" height="360" rx="22" fill="url(#bg)"/>
+  <path d="M0 291 Q300 130 600 263 T1200 173" fill="none" stroke="#39cff5" stroke-opacity=".14" stroke-width="2"/>
+  <path d="M0 316 Q300 155 600 288 T1200 198" fill="none" stroke="#39cff5" stroke-opacity=".07" stroke-width="2"/>
+  <rect x="78" y="95" width="144" height="144" rx="32" fill="#112e40" stroke="#39cff5" stroke-opacity=".45"/>
+  <path d="M102 177 H125 L141 139 L157 202 L173 161 H198" fill="none" stroke="#55d8f5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="273" y="185" fill="#e9f6ff" font-family="Segoe UI, sans-serif" font-weight="600" font-size="75" letter-spacing="16">AERIS</text>
+  <text x="279" y="224" fill="#9dbfce" font-family="Segoe UI, sans-serif" font-size="21" letter-spacing="2">A lighter view of your desktop.</text>
+  <text x="82" y="307" fill="#60b9d0" font-family="Segoe UI, sans-serif" font-size="12" letter-spacing="3">WINDOWS SYSTEM MONITOR · TAURI + RUST</text>
+  <g fill="none" stroke="#6bc5dc" stroke-opacity=".22"><rect x="880" y="76" width="210" height="207" rx="15"/><path d="M880 111 H1090 M900 151 H950 L967 132 L985 167 L1007 144 H1070 M900 208 H1070 M900 238 H1030"/></g>
+</svg>
