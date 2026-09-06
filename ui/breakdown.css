@@ -16,12 +16,18 @@ button.stacked-segment:not(:disabled):hover{background:var(--app-color);filter:b
 #memory-breakdown{margin:14px 0}.metric-card:has(#memory-breakdown) #memory-chart{display:none}
 #cpu-breakdown{min-height:0;flex:1}
 .gadget-processes{padding-top:12px}.g-process{height:30px}
+.gadget-processes{overflow:auto;flex-shrink:0}
+.g-resource+.g-resource{margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+.g-resource-heading{display:flex;align-items:center;gap:9px;margin:0 6px 7px;height:15px}
+.g-resource-heading strong{font:11px var(--number);letter-spacing:.08em}
+.g-resource-heading>span{font-size:9px;color:#a9bdcf}
+.gadget-processes .g-scale-note{margin-top:9px}
 .gadget-network{padding-top:10px;padding-bottom:10px}
 .gadget-memory{padding-bottom:8px}
 #g-memory-bar{display:flex;height:100%;overflow:hidden;background:transparent}
 #g-memory-bar .capacity-segment{display:block;flex-shrink:0;height:100%;background:var(--app-color);border-right:1px solid #0a1c2b66}
 .gadget-memory-body .capacity-key{display:block;font:8px 'Yu Gothic UI','Segoe UI',sans-serif;color:#a9bdcf;letter-spacing:0;margin:3px 0 0;white-space:nowrap}
-#g-stack .stacked-caption,#g-stack .stacked-legend,#g-stack .stacked-note{display:none}#g-stack{margin:0 0 8px}#g-stack .stacked-track{height:14px}
+.g-resource-stack .stacked-caption,.g-resource-stack .stacked-legend,.g-resource-stack .stacked-note{display:none}.g-resource-stack{margin:0 0 8px}.g-resource-stack .stacked-track{height:14px}
 .g-process-dot{width:6px;height:6px;flex-shrink:0;border-radius:2px;background:var(--app-color)}
 @media(max-width:1100px){.stacked-legend{gap:2px 10px}.stacked-item{font-size:9px}.stacked-item strong{font-size:10px}}
 @media(max-height:760px){.cpu-panel:has(#cpu-breakdown:not([hidden])){height:226px}#cpu-breakdown .stacked-caption{margin-bottom:5px}#cpu-breakdown .stacked-track{height:18px}#cpu-breakdown .stacked-legend{margin-top:5px;gap:1px 10px}#cpu-breakdown .stacked-item{padding:2px 0}#cpu-breakdown .stacked-note{margin-top:4px}}

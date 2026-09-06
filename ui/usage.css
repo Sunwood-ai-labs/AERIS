@@ -19,9 +19,6 @@ th:has([data-sort="cpu"]){color:var(--cpu-color)}th:has([data-sort="memory"]){co
 .core-tile strong{color:var(--resource-color,var(--accent))}
 .detail-metrics>div:first-child strong{color:var(--cpu-color)}.detail-metrics>div:last-child strong{color:var(--memory-color)}
 .cpu-panel{height:252px}
-.gadget-processes>.gadget-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.g-usage-tabs{display:flex;gap:3px}.g-usage-tabs button{font:9px var(--number);padding:4px 6px;border:1px solid transparent;border-radius:3px;color:#a9bdcf}
-.g-usage-tabs button[aria-pressed="true"]{border-color:var(--resource-color);color:var(--resource-color);background:#15283c}
 .g-process .g-process-name{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:1;min-width:0}
 .g-process .process-usage{width:73px;flex-shrink:0;font-size:11px;gap:4px}.g-process .usage-track{height:4px}
 .gadget-processes .g-scale-note{margin:6px 6px 0;font-size:8px;color:#a9bdcf}
