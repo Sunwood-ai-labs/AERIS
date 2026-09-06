@@ -1,6 +1,6 @@
 # Third-party components
 
-AERIS uses these open-source components. Exact resolved versions are in `package-lock.json` and `src-tauri/Cargo.lock`.
+AERIS uses these open-source components. Exact resolved versions are in `pnpm-lock.yaml` and `src-tauri/Cargo.lock`.
 
 - Tauri and the Tauri JavaScript API — MIT / Apache-2.0 — https://github.com/tauri-apps/tauri
 - sysinfo — MIT — https://github.com/GuillaumeGomez/sysinfo

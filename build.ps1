@@ -9,9 +9,11 @@ Push-Location $projectDirectory
 try {
     if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) { throw 'Rust is required. Install rustup from https://rustup.rs/' }
     if (-not (Get-Command gcc -ErrorAction SilentlyContinue)) { throw 'MinGW-w64 is required for this GNU toolchain. Install WinLibs or use an MSVC Rust toolchain with C++ Build Tools.' }
-    if (-not (Test-Path 'node_modules')) { npm ci; if ($LASTEXITCODE) { throw 'npm ci failed' } }
-    if (-not $SkipTests) { npm test; if ($LASTEXITCODE) { throw 'Frontend tests failed' } }
-    npm run release
+    if (-not (Get-Command pnpm -ErrorAction SilentlyContinue)) { throw 'pnpm is required. See README.md for the pinned version and setup.' }
+    pnpm install --frozen-lockfile
+    if ($LASTEXITCODE) { throw 'pnpm install failed' }
+    if (-not $SkipTests) { pnpm test; if ($LASTEXITCODE) { throw 'Frontend tests failed' } }
+    pnpm run release
     if ($LASTEXITCODE) { throw 'Native build failed' }
     $releaseDirectory = Join-Path $projectDirectory 'release\AERIS'
     New-Item -ItemType Directory -Path $releaseDirectory -Force | Out-Null

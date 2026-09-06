@@ -3,6 +3,8 @@
   "version": "1.2.6",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.19.0",
+  "engines": { "node": ">=22.13.0" },
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 1420 --strictPort",
     "build": "tsc --noEmit && vite build",
@@ -11,8 +13,8 @@
     "desktop": "tauri dev",
     "release": "tauri build --no-bundle",
     "icons": "node tools/build-icons.mjs",
-    "prebuild": "npm run icons",
-    "predesktop": "npm run icons"
+    "prebuild": "pnpm run icons",
+    "predesktop": "pnpm run icons"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.10.1",

@@ -25,9 +25,9 @@ CPU and memory show the top three named apps under their stacked bars. Process I
 ## Reproduce the checks
 
 ```sh
-npm ci
-npm test
-npm run build
+pnpm install --frozen-lockfile
+pnpm test
+pnpm run build
 cargo test --release --locked --manifest-path src-tauri/Cargo.toml
 ```
 

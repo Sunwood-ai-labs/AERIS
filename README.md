@@ -132,25 +132,32 @@ Hidden/minimized windows stop background rotation timers; on Windows they also r
 
 ## 🛠️ Develop and build
 
-Install Node.js 22+, Rust stable, and the [Tauri prerequisites for your OS](https://v2.tauri.app/start/prerequisites/). Windows defaults to MSVC with Microsoft C++ Build Tools; macOS requires Xcode Command Line Tools; Linux requires WebKitGTK/GTK development packages.
+Install Node.js 22.13+, pnpm 11.19.0, Rust stable, and the [Tauri prerequisites for your OS](https://v2.tauri.app/start/prerequisites/). Windows defaults to MSVC with Microsoft C++ Build Tools; macOS requires Xcode Command Line Tools; Linux requires WebKitGTK/GTK development packages.
+
+The pnpm version is pinned in `package.json`. If pnpm is not installed, follow the [pnpm installation guide](https://pnpm.io/installation), or use Corepack on Node.js 22/24:
+
+```sh
+corepack enable
+corepack install --global pnpm@11.19.0
+```
 
 ```sh
 git clone https://github.com/Sunwood-ai-labs/AERIS.git
 cd AERIS
-npm ci
-npm run desktop
+pnpm install --frozen-lockfile
+pnpm run desktop
 ```
 
 ```sh
-npm test
-npm run build
+pnpm test
+pnpm run build
 cargo test --release --locked --manifest-path src-tauri/Cargo.toml
-npm run tauri -- build
+pnpm exec tauri build
 ```
 
 For MinGW-w64 on Windows, install the GNU Rust toolchain and set `$env:RUSTUP_TOOLCHAIN='stable-x86_64-pc-windows-gnu'` in PowerShell. Put `gcc`, `windres`, and `dlltool` on PATH. The local `./build.ps1` helper selects GNU, builds/tests, and creates `release/AERIS-Windows-x64.zip`. Fully quit AERIS before replacing an existing executable.
 
-`npm run dev` provides a clearly labeled browser sample preview. Native connection errors never silently switch to sample data.
+`pnpm run dev` provides a clearly labeled browser sample preview. Native connection errors never silently switch to sample data.
 
 ## 🚀 CI/CD
 
@@ -160,7 +167,7 @@ For MinGW-w64 on Windows, install the GNU Rust toolchain and set `$env:RUSTUP_TO
 2. Installable packages, the Windows portable ZIP, and checksums are uploaded as Actions artifacts for 14 days. README/screenshot-only changes skip native rebuilds.
 3. Pushing a version tag such as `v1.2.6` builds every target and automatically publishes a GitHub Release **only after every target succeeds**.
 
-Before tagging, align versions in `package.json` / `package-lock.json`, `src-tauri/Cargo.toml` / `Cargo.lock`, `src-tauri/tauri.conf.json`, and UI labels. No signing secrets are currently needed; official code signing and notarization require separate configuration.
+Before tagging, align versions in `package.json`, `src-tauri/Cargo.toml` / `Cargo.lock`, `src-tauri/tauri.conf.json`, and UI labels. No signing secrets are currently needed; official code signing and notarization require separate configuration.
 
 ## 🔬 Measurement notes
 
@@ -172,6 +179,6 @@ AERIS protects itself and known critical OS processes, checks PID and start time
 
 ## 🎨 Design and license
 
-The custom AERIS symbol combines an **A** with a sweep of air. Edit the [vector master](brand/aeris-mark.svg), then run `npm run icons` to regenerate application/tray icons, Windows ICO, macOS ICNS, Linux PNG, and the README banner. The interface renders SVG directly. See the [identity guide](brand/README.md).
+The custom AERIS symbol combines an **A** with a sweep of air. Edit the [vector master](brand/aeris-mark.svg), then run `pnpm run icons` to regenerate application/tray icons, Windows ICO, macOS ICNS, Linux PNG, and the README banner. The interface renders SVG directly. See the [identity guide](brand/README.md).
 
 Three generated RGBA backgrounds are included. See [generation notes](docs/backgrounds.md). Source code is under the [MIT License](LICENSE); dependency information is in [THIRD_PARTY.md](THIRD_PARTY.md).

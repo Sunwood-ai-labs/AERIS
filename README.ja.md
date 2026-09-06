@@ -136,25 +136,32 @@ CPU・メモリの使用量はOSのWebView、開いている画面数、背景�
 
 ## 🛠️ 開発・ビルド
 
-Node.js 22以降、Rust stable、および [TauriのOS別前提条件](https://v2.tauri.app/start/prerequisites/) が必要です。Windows標準はMSVC + Microsoft C++ Build Tools、macOSはXcode Command Line Tools、LinuxはWebKitGTK/GTKなどの開発パッケージを使用します。
+Node.js 22.13以降、pnpm 11.19.0、Rust stable、および [TauriのOS別前提条件](https://v2.tauri.app/start/prerequisites/) が必要です。Windows標準はMSVC + Microsoft C++ Build Tools、macOSはXcode Command Line Tools、LinuxはWebKitGTK/GTKなどの開発パッケージを使用します。
+
+`package.json` でpnpmのバージョンを固定しています。未導入なら [pnpmのインストール手順](https://pnpm.io/installation) を利用するか、Node.js 22／24のCorepackで準備してください。
+
+```sh
+corepack enable
+corepack install --global pnpm@11.19.0
+```
 
 ```sh
 git clone https://github.com/Sunwood-ai-labs/AERIS.git
 cd AERIS
-npm ci
-npm run desktop
+pnpm install --frozen-lockfile
+pnpm run desktop
 ```
 
 ```sh
-npm test
-npm run build
+pnpm test
+pnpm run build
 cargo test --release --locked --manifest-path src-tauri/Cargo.toml
-npm run tauri -- build
+pnpm exec tauri build
 ```
 
 WindowsでMinGW-w64を使う場合はGNU toolchainをインストールし、PowerShellで `$env:RUSTUP_TOOLCHAIN='stable-x86_64-pc-windows-gnu'` を設定してください。`gcc`・`windres`・`dlltool` をPATHから実行できるようにします。ローカル用 `./build.ps1` はGNUを選択してビルド・テストし、`release/AERIS-Windows-x64.zip` を作成します。配布ファイルの置き換え前にはAERISを完全終了してください。
 
-`npm run dev` はサンプル表示のブラウザープレビューです。ネイティブ版の接続エラーをサンプルで代用しません。
+`pnpm run dev` はサンプル表示のブラウザープレビューです。ネイティブ版の接続エラーをサンプルで代用しません。
 
 ## 🚀 CI/CD
 
@@ -164,7 +171,7 @@ WindowsでMinGW-w64を使う場合はGNU toolchainをインストールし、Pow
 2. インストーラー・ポータブル版・チェックサムをActionsのArtifactsへ保存（14日間）。README・スクリーンショットだけの変更ではネイティブ再ビルドを省略します。
 3. `v1.2.6` のようなバージョンタグをpushすると全構成をビルドし、**全構成の成功後**にGitHub Releaseを作成・公開します。
 
-リリース時は `package.json` / `package-lock.json`、`src-tauri/Cargo.toml` / `Cargo.lock`、`src-tauri/tauri.conf.json` と画面のバージョン表記を揃えてからタグを付けます。秘密鍵や署名証明書は現在不要です。公証・正式コード署名は別途設定が必要です。
+リリース時は `package.json`、`src-tauri/Cargo.toml` / `Cargo.lock`、`src-tauri/tauri.conf.json` と画面のバージョン表記を揃えてからタグを付けます。秘密鍵や署名証明書は現在不要です。公証・正式コード署名は別途設定が必要です。
 
 ## 🔬 計測の仕様
 
@@ -176,7 +183,7 @@ WindowsでMinGW-w64を使う場合はGNU toolchainをインストールし、Pow
 
 ## 🎨 デザインとライセンス
 
-AERISのアイコンは「A」と空気の流れを組み合わせた専用SVGです。[ベクター原本](brand/aeris-mark.svg)を編集し、`npm run icons` でアプリ・トレイ・Windows ICO・macOS ICNS・Linux PNG・READMEバナーを再生成できます。画面内ロゴはSVGを直接表示します。[アイコンの管理方法](brand/README.md)
+AERISのアイコンは「A」と空気の流れを組み合わせた専用SVGです。[ベクター原本](brand/aeris-mark.svg)を編集し、`pnpm run icons` でアプリ・トレイ・Windows ICO・macOS ICNS・Linux PNG・READMEバナーを再生成できます。画面内ロゴはSVGを直接表示します。[アイコンの管理方法](brand/README.md)
 
 背景画像は組み込みimagegenで生成したRGBA PNGを同梱しています。[生成の記録](docs/backgrounds.md)を参照してください。
 

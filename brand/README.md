@@ -9,7 +9,7 @@ The mark combines an ascending **A** with an upward sweep of air. Three filled p
 | `aeris-tray.svg` | Stronger monochrome silhouette for the notification area |
 | `aeris-monochrome.svg` | Single-colour symbol using `currentColor` |
 
-Edit **only `aeris-mark.svg`** to change the geometry. Run `npm run icons` to regenerate the derived SVGs, PNG/ICO/ICNS files, and README banner. `npm run icons -- --preview` also writes a review sheet under the ignored `artifacts/` directory.
+Edit **only `aeris-mark.svg`** to change the geometry. Run `pnpm run icons` to regenerate the derived SVGs, PNG/ICO/ICNS files, and README banner. `ppnpm run icons --preview` also writes a review sheet under the ignored `artifacts/` directory.
 
 The source contains no embedded bitmap, font, external reference, or SVG filter. Application UI and browser favicon consume SVG. Native application resources and the tray require platform formats, generated from the vector source: Windows ICO (16, 20, 24, 32, 40, 48, 64, 128, 256 px), macOS ICNS (256, 512, 1024 px), and Linux/application PNG (512 px). These are generated outputs, not design originals. CI regenerates and compares all assets on every operating system.
 

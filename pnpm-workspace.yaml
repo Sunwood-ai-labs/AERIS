@@ -1,0 +1,7 @@
+# Retain icon-generation hooks when running build/desktop scripts.
+enablePrePostScripts: true
+
+# Native tooling already used by Vite and its optional macOS file watcher.
+allowBuilds:
+  esbuild: true
+  fsevents: true

@@ -52,7 +52,17 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-          cache: npm
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          run_install: false
+      - name: Locate pnpm store
+        id: pnpm-store
+        shell: bash
+        run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json') }}
       - name: Linux build dependencies
         if: runner.os == 'Linux'
         run: |
@@ -68,15 +78,15 @@ jobs:
             src-tauri/target
           key: rust-${{ matrix.target }}-${{ hashFiles('src-tauri/Cargo.lock') }}
           restore-keys: rust-${{ matrix.target }}-
-      - run: npm ci
-      - run: npm test
-      - run: npm run build
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm run build
       - name: Verify generated vector assets
         run: git diff --exit-code -- brand src-tauri/icons docs/assets/aeris-banner.svg
       - name: Native unit tests
         run: cargo test --release --locked --manifest-path src-tauri/Cargo.toml --target ${{ matrix.target }}
       - name: Build desktop packages
-        run: npm run tauri -- build --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
+        run: pnpm exec tauri build --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
       - name: Native integration test and collect packages
         run: node tools/package-ci.mjs ${{ matrix.target }} ${{ matrix.platform }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
