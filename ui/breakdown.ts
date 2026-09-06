@@ -1,5 +1,6 @@
 import {escapeHtml as esc,bytes,type ProcessRow} from './model';
 import type {Resource} from './usage';
+import {percentage} from './usage';
 export type AppUsage={key:string;name:string;cpu:number;memory:number;count:number;color:string};
 export type Segment={key:string|null;name:string;value:number;share:number;count:number;color:string};
 export const appKey=(name:string)=>name.trim().toLowerCase();
@@ -29,6 +30,15 @@ export function breakdown(apps:AppUsage[],resource:Resource,limit=5):{total:numb
  return {total,segments};
 }
 export const usageAmount=(value:number,resource:Resource)=>resource==='cpu'?value.toFixed(1)+'%':bytes(value);
+// Keep the physical used/free boundary accurate. Colors only show the relative
+// resident-process composition within the used area; they are not physical attribution.
+export function memoryCapacity(apps:AppUsage[],used:number,total:number){
+ const usedPercent=percentage(used,total);
+ const {segments}=breakdown(apps,'memory',3);
+ const explanation='使用中の幅をプロセスメモリの比率で色分け。各アプリの物理RAM占有量ではありません（共有ページの重複を含む）。';
+ const html=segments.length?segments.map(s=>`<i class="capacity-segment" style="width:${s.share}%;--app-color:${s.color}" role="img" aria-label="${esc(s.name)} · プロセスメモリ ${bytes(s.value)} · 計測合計の${s.share.toFixed(1)}%" title="${esc(s.name)} · ${bytes(s.value)} · 計測合計の${s.share.toFixed(1)}%\n${explanation}"></i>`).join(''):`<i class="capacity-segment capacity-unknown" style="width:100%;--app-color:#71899e" role="img" aria-label="プロセス内訳を取得できません" title="使用中 · プロセス内訳を取得できません"></i>`;
+ return {usedPercent,html};
+}
 export function renderBreakdown(apps:AppUsage[],resource:Resource,compact=false,interactive=true):string{
  const {total,segments}=breakdown(apps,resource,compact?3:5);
  if(!segments.length)return '<p class="breakdown-empty">計測できる使用量がありません</p>';

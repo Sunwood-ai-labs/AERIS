@@ -74,22 +74,22 @@ AERISの履歴はWindowsが保持する過去のUWP履歴とは別です。タ�
 
 ## 📦 ダウンロードと起動
 
-[Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest) から、自分のOS・CPUに合うファイルを選んでください。以下の `1.2.2` はバージョン番号です。
+[Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest) から、自分のOS・CPUに合うファイルを選んでください。以下の `1.2.3` はバージョン番号です。
 
 | OS / CPU | 配布ファイル | 起動方法 |
 |---|---|---|
-| Windows x64 | `AERIS-1.2.2-windows-x64-setup.exe` | インストーラーを実行 |
-| Windows x64・ポータブル | `AERIS-1.2.2-windows-x64-portable.zip` | フォルダー全体を展開して `AERIS/AERIS.exe` を起動 |
-| macOS・Apple Silicon | `AERIS-1.2.2-macos-arm64.dmg` | 開いてAERISをApplicationsへコピー |
-| macOS・Intel | `AERIS-1.2.2-macos-x64.dmg` | 開いてAERISをApplicationsへコピー |
-| Linux x64・Debian/Ubuntu系 | `AERIS-1.2.2-linux-x64.deb` | `sudo apt install ./AERIS-1.2.2-linux-x64.deb` |
-| Linux x64・AppImage | `AERIS-1.2.2-linux-x64.AppImage` | 実行権限を付けて起動 |
+| Windows x64 | `AERIS-1.2.3-windows-x64-setup.exe` | インストーラーを実行 |
+| Windows x64・ポータブル | `AERIS-1.2.3-windows-x64-portable.zip` | フォルダー全体を展開して `AERIS/AERIS.exe` を起動 |
+| macOS・Apple Silicon | `AERIS-1.2.3-macos-arm64.dmg` | 開いてAERISをApplicationsへコピー |
+| macOS・Intel | `AERIS-1.2.3-macos-x64.dmg` | 開いてAERISをApplicationsへコピー |
+| Linux x64・Debian/Ubuntu系 | `AERIS-1.2.3-linux-x64.deb` | `sudo apt install ./AERIS-1.2.3-linux-x64.deb` |
+| Linux x64・AppImage | `AERIS-1.2.3-linux-x64.AppImage` | 実行権限を付けて起動 |
 
 Windowsでは [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) が必要です。ZIPにDLLが含まれる場合は実行ファイルと一緒に配置してください。macOSは12.0以降を対象とし、OSのWKWebViewを利用します。LinuxはUbuntu 22.04でビルドし、WebKitGTK 4.1を使用します。DEBは依存パッケージをAPTで解決します。AppImageの起動には環境に応じてFUSE 2互換ライブラリが必要です。
 
 ```sh
-chmod +x AERIS-1.2.2-linux-x64.AppImage
-./AERIS-1.2.2-linux-x64.AppImage
+chmod +x AERIS-1.2.3-linux-x64.AppImage
+./AERIS-1.2.3-linux-x64.AppImage
 ```
 
 各ファイルにSHA-256チェックサムを同梱しています。Windows版はAuthenticode未署名、macOS版はアドホック署名でAppleの公証は未実施です。そのためOSの初回起動確認が表示されることがあります。
@@ -113,6 +113,8 @@ chmod +x AERIS-1.2.2-linux-x64.AppImage
 **アプリ別の積み上げバー：** 概要画面では同じ実行ファイル名のプロセスを合算し、CPUとメモリで同じアプリに同じ色を付けます。上位アプリを色と凡例で表示し、残りは「その他」にまとめます。色の区画や凡例を押すと、そのアプリのプロセス一覧へ移動できます。CPUはバー上部のボタンで時間推移にも切り替え可能。ガジェットのCPU／MEMで積み上げ内訳と上位3アプリを切り替えられます。
 
 積み上げバーは**計測できたプロセスの合計を100%**として表示します。別に表示するシステム全体のCPU使用率・物理メモリ使用率とは基準が異なります。プロセスメモリは共有ページを含むため、合算値は物理RAM消費量と一致しません。区画にマウスを重ねると、使用量・内訳比率・プロセス数を確認できます。
+
+ガジェット上部のメモリ容量バーもアプリ別の色で表示します。色付き部分の幅は実際の物理メモリ使用率で、右側は空き容量。色付き部分の中を計測したプロセスメモリの比率で配分するため、**各アプリの物理RAM占有量を表すものではありません**。注記とツールチップで基準を確認でき、下部のCPU／MEM切り替えにかかわらず上部はメモリを表示します。
 
 **プロセス一覧の比較バー：** CPUはシアン、メモリは紫。一覧のバーは、全プロセス中の各列の最多使用量を基準に比較し、検索しても基準を変えません。数値は実際のCPU使用率・常駐メモリ量です。「最多」のアプリを押すと該当PIDに絞り込めます。
 
@@ -156,7 +158,7 @@ WindowsでMinGW-w64を使う場合はGNU toolchainをインストールし、Pow
 
 1. `main`へのコード変更・Pull Request・手動実行で、フロントエンドとRustの単体テスト、アイコン再生成の一致確認、ネイティブビルド、統合テストを実行。
 2. インストーラー・ポータブル版・チェックサムをActionsのArtifactsへ保存（14日間）。README・スクリーンショットだけの変更ではネイティブ再ビルドを省略します。
-3. `v1.2.2` のようなバージョンタグをpushすると全構成をビルドし、**全構成の成功後**にGitHub Releaseを作成・公開します。
+3. `v1.2.3` のようなバージョンタグをpushすると全構成をビルドし、**全構成の成功後**にGitHub Releaseを作成・公開します。
 
 リリース時は `package.json` / `package-lock.json`、`src-tauri/Cargo.toml` / `Cargo.lock`、`src-tauri/tauri.conf.json` と画面のバージョン表記を揃えてからタグを付けます。秘密鍵や署名証明書は現在不要です。公証・正式コード署名は別途設定が必要です。
 

@@ -1,6 +1,16 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {aggregateApps,breakdown,appColor,renderBreakdown} from '../ui/breakdown';import type{ProcessRow}from '../ui/model';
+import {aggregateApps,breakdown,appColor,renderBreakdown,memoryCapacity} from '../ui/breakdown';import type{ProcessRow}from '../ui/model';
 const row=(name:string,cpu:number,memory:number)=>({name,cpu,memory}) as ProcessRow;
+test('capacity bar preserves physical used/free even when shared process memory exceeds capacity',()=>{
+ const apps=aggregateApps([row('a',1,800),row('b',1,1200)]);
+ const bar=memoryCapacity(apps,400,1000);
+ assert.equal(bar.usedPercent,40);
+ assert.ok(bar.html.includes('width:60%'));assert.ok(bar.html.includes('width:40%'));
+ assert.ok(bar.html.includes('物理RAM占有量ではありません'));
+ assert.equal(memoryCapacity(apps,400,0).usedPercent,0);
+ assert.equal(memoryCapacity(apps,1200,1000).usedPercent,100);
+ assert.ok(memoryCapacity([],400,1000).html.includes('内訳を取得できません'));
+});
 test('same executable groups case-insensitively and keeps its color across resources and ordering',()=>{
  const rows=[row('Chrome.exe',5,200),row('chrome.exe',3,300),row('Code.exe',9,100)];const apps=aggregateApps(rows);const chrome=apps.find(a=>a.key==='chrome.exe')!;
  assert.equal(chrome.cpu,8);assert.equal(chrome.memory,500);assert.equal(chrome.count,2);assert.equal(chrome.color,appColor('chrome.exe'));
