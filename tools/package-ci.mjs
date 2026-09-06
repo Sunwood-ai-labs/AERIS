@@ -15,6 +15,10 @@ const executable=path.join(build,process.platform==='win32'?'aeris.exe':'aeris')
 const test=spawnSync(executable,['--self-test',privateOutput],{encoding:'utf8',timeout:30000,windowsHide:true});
 if(test.error||test.status!==0) throw Error(`Native self-test failed: ${test.error||test.stderr||test.status}`);
 console.log(`Native integration test passed on ${platform}`);
+if(process.platform==='win32'){
+ const management=spawnSync('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File','tools/test-windows.ps1','-NativeExe',executable],{stdio:'inherit',timeout:180000,windowsHide:true});
+ if(management.error||management.status!==0)throw Error('Windows management fixture tests failed');
+}
 
 function walk(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?walk(path.join(dir,entry.name)):[path.join(dir,entry.name)]);}
 const packages=walk(path.join(build,'bundle')).filter(file=>/\.(exe|dmg|deb|AppImage)$/.test(file));

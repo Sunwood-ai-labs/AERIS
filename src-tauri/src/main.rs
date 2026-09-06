@@ -1,8 +1,11 @@
 #![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
+mod telemetry;
+mod actions;
+mod windows_tools;
 use serde::{Deserialize, Serialize};
 use std::{collections::{HashMap, VecDeque}, fs, path::PathBuf, sync::{Arc, Mutex}, thread, time::{Duration, Instant, SystemTime, UNIX_EPOCH}};
-use sysinfo::{Networks, Pid, ProcessRefreshKind, ProcessesToUpdate, System, UpdateKind};
+use sysinfo::{Disks, Users, Networks, Pid, ProcessRefreshKind, ProcessesToUpdate, System, UpdateKind};
 use tauri::{Emitter, Manager, State, WebviewWindow, WebviewWindowBuilder, WebviewUrl};
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -19,20 +22,20 @@ impl Settings {
 #[derive(Clone, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 struct Sample { time: u64, cpu: f32, memory: f64, download: f64, upload: f64 }
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
-struct ProcessRow { pid: u32, name: String, cpu: f32, memory: u64, start_time: u64, path: Option<String>, protected: bool }
+struct ProcessRow { pid: u32, name: String, cpu: f32, memory: u64, start_time: u64, path: Option<String>, protected: bool, parent: Option<u32>, user: Option<String>, status: String, read: f64, write: f64, cpu_time: u64, command: Vec<String> }
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct Snapshot {
     sample: Sample, history: Vec<Sample>, processes: Vec<ProcessRow>, total_memory: u64, used_memory: u64,
     cpu_name: String, cores: usize, uptime: u64, host: String, os: String, paused: bool, ready: bool,
-    settings: Settings, error: Option<String>,
+    settings: Settings, error: Option<String>, performance: telemetry::Performance,
 }
 impl Default for Snapshot {
     fn default() -> Self { Self { sample: Sample::default(), history: vec![], processes: vec![], total_memory: 0, used_memory: 0,
         cpu_name: String::new(), cores: 0, uptime: 0, host: System::host_name().unwrap_or_default(), os: System::long_os_version().unwrap_or_else(|| std::env::consts::OS.into()),
-        paused: false, ready: false, settings: Settings::default(), error: None } }
+        paused: false, ready: false, settings: Settings::default(), error: None, performance: telemetry::Performance::default() } }
 }
 struct Shared { snapshot: Snapshot, settings: Settings, paused: bool, force: bool, settings_path: PathBuf }
 type SharedState = Arc<Mutex<Shared>>;
@@ -44,17 +47,18 @@ fn protected(pid: u32, name: &str) -> bool {
 }
 fn loopback(name: &str) -> bool { let name=name.to_ascii_lowercase(); name=="lo" || name=="lo0" || name.contains("loopback") }
 fn timestamp() -> u64 { SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_millis() as u64 }
-struct Monitor { system: System, networks: Networks, last: Instant, history: VecDeque<Sample>, primed: bool }
+struct Monitor { system: System, networks: Networks, disks: Disks, users: Users, last: Instant, history: VecDeque<Sample>, primed: bool }
 impl Monitor {
     fn new() -> Self {
         let mut system = System::new();
         system.refresh_cpu_all();
         system.refresh_memory();
         system.refresh_processes_specifics(ProcessesToUpdate::All, true, process_refresh());
-        Self { system, networks: Networks::new_with_refreshed_list(), last: Instant::now(), history: VecDeque::new(), primed: false }
+        Self { system, networks: Networks::new_with_refreshed_list(), disks: Disks::new_with_refreshed_list(), users: Users::new_with_refreshed_list(), last: Instant::now(), history: VecDeque::new(), primed: false }
     }
     fn sample(&mut self, settings: Settings) -> Snapshot {
-        self.system.refresh_cpu_usage();
+        self.system.refresh_cpu_all();
+        self.disks.refresh(true);
         self.system.refresh_memory();
         self.system.refresh_processes_specifics(ProcessesToUpdate::All, true, process_refresh());
         self.networks.refresh(true);
@@ -72,16 +76,16 @@ impl Monitor {
         while self.history.front().is_some_and(|s| s.time < sample.time.saturating_sub(60000)) { self.history.pop_front(); }
         let mut processes: Vec<ProcessRow> = self.system.processes().iter().filter(|(pid,_)| pid.as_u32()!=0).map(|(pid,p)| {
             let name = p.name().to_string_lossy().to_string();
-            ProcessRow { pid: pid.as_u32(), cpu: (p.cpu_usage() / cores as f32).clamp(0.,100.), memory: p.memory(), start_time: p.start_time(), path: p.exe().map(|x| x.to_string_lossy().into_owned()), protected: protected(pid.as_u32(), &name), name }
+            ProcessRow { pid: pid.as_u32(), cpu: (p.cpu_usage() / cores as f32).clamp(0.,100.), memory: p.memory(), start_time: p.start_time(), path: p.exe().map(|x| x.to_string_lossy().into_owned()), protected: protected(pid.as_u32(), &name), parent: p.parent().map(|x|x.as_u32()), user: p.user_id().and_then(|id|self.users.get_user_by_id(id)).map(|u|u.name().into()), status: p.status().to_string(), read: p.disk_usage().read_bytes as f64/elapsed, write: p.disk_usage().written_bytes as f64/elapsed, cpu_time: p.accumulated_cpu_time(), command: p.cmd().iter().map(|s|s.to_string_lossy().into_owned()).collect(), name }
         }).collect();
         processes.sort_by(|a,b| b.cpu.total_cmp(&a.cpu).then(b.memory.cmp(&a.memory)));
         self.primed = true;
         Snapshot { sample, history: self.history.iter().cloned().collect(), processes, total_memory: total, used_memory: used,
             cpu_name: self.system.cpus().first().map(|x| x.brand().trim().to_string()).unwrap_or_default(), cores, uptime: System::uptime(),
-            host: System::host_name().unwrap_or_default(), os: System::long_os_version().unwrap_or_default(), paused: false, ready: true, settings, error: None }
+            host: System::host_name().unwrap_or_default(), os: System::long_os_version().unwrap_or_default(), paused: false, ready: true, settings, error: None, performance: telemetry::sample(&self.system,&self.disks,&self.networks,elapsed) }
     }
 }
-fn process_refresh() -> ProcessRefreshKind { ProcessRefreshKind::nothing().with_cpu().with_memory().with_exe(UpdateKind::OnlyIfNotSet) }
+fn process_refresh() -> ProcessRefreshKind { ProcessRefreshKind::nothing().with_cpu().with_memory().with_disk_usage().with_user(UpdateKind::OnlyIfNotSet).with_cmd(UpdateKind::OnlyIfNotSet).with_exe(UpdateKind::OnlyIfNotSet) }
 
 #[tauri::command]
 fn get_snapshot(state: State<SharedState>) -> Result<Snapshot, String> {
@@ -203,6 +207,7 @@ async fn end_process(state: State<'_, SharedState>, pid: u32, start_time: u64) -
 
 fn main() {
     let args: Vec<String>=std::env::args().collect();
+    if args.iter().any(|x| x=="--test-parent") { let _child=std::process::Command::new(std::env::current_exe().unwrap()).arg("--test-child").spawn().unwrap();loop {thread::sleep(Duration::from_millis(100));} }
     if args.iter().any(|x| x=="--test-child") { loop { std::hint::black_box((0..10000u64).sum::<u64>()); thread::sleep(Duration::from_millis(10)); } }
     if let Some(i)=args.iter().position(|x| x=="--self-test") {
         let output=args.get(i+1).expect("self-test requires an output path");
@@ -210,6 +215,8 @@ fn main() {
         let first=monitor.sample(Settings::default()); thread::sleep(Duration::from_millis(1200)); let snapshot=monitor.sample(Settings::default());
         assert!(first.total_memory>0 && snapshot.processes.len()>0 && snapshot.sample.cpu>=0. && snapshot.sample.cpu<=100.);
         assert!(snapshot.processes.iter().any(|p|p.pid==std::process::id()));
+        assert_eq!(snapshot.performance.cpus.len(),snapshot.cores);
+        assert!(snapshot.performance.cpus.iter().all(|c| c.usage.is_finite() && (0.0..=100.0).contains(&c.usage)));
         assert!(terminate(std::process::id(),0).is_err());
         let mut child=std::process::Command::new(std::env::current_exe().unwrap()).arg("--test-child").spawn().unwrap();
         thread::sleep(Duration::from_millis(500)); let probe=monitor.sample(Settings::default());
@@ -217,6 +224,17 @@ fn main() {
         assert!(terminate(row.pid,row.start_time+1).is_err());
         terminate(row.pid,row.start_time).expect("terminate owned disposable child");
         child.wait().unwrap();
+        let mut parent=std::process::Command::new(std::env::current_exe().unwrap()).arg("--test-parent").spawn().unwrap();
+        thread::sleep(Duration::from_millis(800));let tree=monitor.sample(Settings::default());
+        let root=tree.processes.iter().find(|p|p.pid==parent.id()).unwrap();
+        let descendants=actions::descendants(root.pid,&tree.processes);
+        if descendants.len()<2 {let _=parent.kill();let _=parent.wait();panic!("test descendant not detected");}
+        let ended=actions::terminate_tree(root.pid,root.start_time);
+        // Ensure all owned fixtures are cleaned even when the operation fails.
+        for (pid,start) in &descendants {let _=terminate(*pid,*start);}let _=parent.wait();
+        ended.expect("terminate owned process tree");
+        let remaining=monitor.sample(Settings::default());
+        assert!(descendants.iter().all(|(pid,start)|!remaining.processes.iter().any(|p|p.pid==*pid&&p.start_time==*start)));
         fs::write(output,serde_json::to_vec_pretty(&snapshot).unwrap()).unwrap(); return;
     }
     tauri::Builder::default()
@@ -285,7 +303,7 @@ fn main() {
             if window.label()=="main" { let _=window.minimize(); return; }
             let _=window.hide();
         } })
-        .invoke_handler(tauri::generate_handler![get_snapshot,set_paused,refresh_now,save_settings,show_gadget,show_main,hide_gadget,quit_app,end_process])
+        .invoke_handler(tauri::generate_handler![actions::restart_explorer,windows_tools::system_tool,actions::run_task,actions::reveal_process,actions::end_process_tree,get_snapshot,set_paused,refresh_now,save_settings,show_gadget,show_main,hide_gadget,quit_app,end_process])
         .build(tauri::generate_context!()).expect("AERIS could not start")
         .run(|_app,_event| {
             #[cfg(target_os = "macos")]

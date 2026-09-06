@@ -1,12 +1,13 @@
-export type ProcessRow = { pid: number; name: string; cpu: number; memory: number; startTime: number; path: string | null; protected: boolean };
+export type ProcessRow = { pid: number; name: string; cpu: number; memory: number; startTime: number; path: string | null; protected: boolean; parent?: number|null; user?: string|null; status?: string; read?: number; write?: number; cpuTime?: number; command?: string[] };
 export type Sample = { time: number; cpu: number; memory: number; download: number; upload: number };
 export type Settings = { interval: number; pinned: boolean; mini: boolean; wallpaper: 'random'|'none'|'aurora'|'glass'|'nebula'; wallpaperInterval: number; glassOpacity: number; imageOpacity: number };
-export type Snapshot = { sample: Sample; history: Sample[]; processes: ProcessRow[]; totalMemory: number; usedMemory: number; cpuName: string; cores: number; uptime: number; host: string; os: string; paused: boolean; ready: boolean; settings: Settings; error: string | null };
-export type SortKey = 'name' | 'pid' | 'cpu' | 'memory';
+export type Performance = { cpus:{name:string;usage:number;frequency:number}[]; totalSwap:number; usedSwap:number; disks:{name:string;mount:string;kind:string;filesystem:string;total:number;available:number;read:number;write:number}[]; interfaces:{name:string;mac:string;download:number;upload:number;totalReceived:number;totalTransmitted:number}[] };
+export type Snapshot = { sample: Sample; history: Sample[]; processes: ProcessRow[]; totalMemory: number; usedMemory: number; cpuName: string; cores: number; uptime: number; host: string; os: string; paused: boolean; ready: boolean; settings: Settings; error: string | null; performance?:Performance };
+export type SortKey = 'name' | 'pid' | 'cpu' | 'memory' | 'read' | 'write';
 export function filterSort(rows: ProcessRow[], query: string, key: SortKey, descending: boolean): ProcessRow[] {
  const term = query.trim().toLocaleLowerCase();
  return rows.filter(p => !term || p.name.toLocaleLowerCase().includes(term) || String(p.pid).includes(term)).sort((a,b) => {
-  const delta = key === 'name' ? a.name.localeCompare(b.name) : a[key] - b[key];
+  const delta = key === 'name' ? a.name.localeCompare(b.name) : (a[key]??0) - (b[key]??0);
   return (descending ? -delta : delta) || a.pid - b.pid;
  });
 }

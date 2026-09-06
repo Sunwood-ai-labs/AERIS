@@ -17,6 +17,25 @@
 - **プロセスを確認**：名前・PID検索、CPU・メモリの並べ替え、詳細と終了確認。
 - **ローカルで動作**：ログイン・外部サーバー不要。AERISによる利用状況の収集・送信はありません。
 
+## 🧰 タスクマネージャーの基本機能
+
+1.2では、日常的に使うタスク管理機能を追加しました。
+
+| 項目 | 機能 |
+|---|---|
+| プロセス・詳細 | CPU・メモリ・ディスクI/O順、所有者・親PID・引数・開始時刻・CPU時間、ファイルの場所 |
+| 操作 | 新しいタスクの実行、単独／ツリー終了、Windowsの優先度変更・Explorer再起動 |
+| パフォーマンス | 論理CPU使用率・周波数、物理メモリ・スワップ、ディスク容量・読み書き速度、アダプター別通信量 |
+| GPU（Windows） | PDHによるエンジン使用率・専用／共有メモリを手動更新。取得できない場合は状態を表示 |
+| アプリ履歴 | 観測開始後のCPU累積時間と最大メモリ。終了したプロセスも保持、リセット可能 |
+| ユーザー | 所有者別の負荷とプロセス絞り込み、Windowsのサインインセッション一覧 |
+| スタートアップ（Windows） | Runレジストリ・スタートアップフォルダーの有効／無効切り替え。起動コマンドは保持 |
+| サービス（Windows） | 状態・PID・起動方法、検索、開始／停止／再起動、重要サービスの保護 |
+
+変更操作はアプリ内で確認します。権限不足はエラーとして表示し、自動昇格しません。スタートアップ・サービス・GPU・セッションは必要時に取得し、ガジェット常駐中には定期実行しません。Windows管理機能にはWindows PowerShell 5.1とOSの情報取得機能を使用します。スタートアップ状態はWindowsの `StartupApproved` レジストリ形式を利用し、未知の形式は変更しません。変更前の値は `HKCU\Software\AERIS\StartupStateBackup` に保存します。
+
+AERISの履歴はWindowsが保持する過去のUWP履歴とは別です。タスクスケジューラー・パッケージアプリの自動起動、起動時の影響度、プロセス別通信量、効率モード、CPU割り当て、ダンプ、ユーザーログオフは未実装です。取得権限がないプロセス項目もあります。[機能の検証表](docs/task-manager-coverage.md)
+
 ## 📸 スクリーンショット
 
 実装済みUIのブラウザープレビューを撮影しています。数値・プロセス名はサンプルデータです。OS別の実機画面ではなく、ネイティブの透過効果は背後の壁紙やOSによって変わります。
@@ -40,22 +59,22 @@
 
 ## 📦 ダウンロードと起動
 
-[Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest) から、自分のOS・CPUに合うファイルを選んでください。以下の `1.1.0` はバージョン番号です。
+[Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest) から、自分のOS・CPUに合うファイルを選んでください。以下の `1.2.0` はバージョン番号です。
 
 | OS / CPU | 配布ファイル | 起動方法 |
 |---|---|---|
-| Windows x64 | `AERIS-1.1.0-windows-x64-setup.exe` | インストーラーを実行 |
-| Windows x64・ポータブル | `AERIS-1.1.0-windows-x64-portable.zip` | フォルダー全体を展開して `AERIS/AERIS.exe` を起動 |
-| macOS・Apple Silicon | `AERIS-1.1.0-macos-arm64.dmg` | 開いてAERISをApplicationsへコピー |
-| macOS・Intel | `AERIS-1.1.0-macos-x64.dmg` | 開いてAERISをApplicationsへコピー |
-| Linux x64・Debian/Ubuntu系 | `AERIS-1.1.0-linux-x64.deb` | `sudo apt install ./AERIS-1.1.0-linux-x64.deb` |
-| Linux x64・AppImage | `AERIS-1.1.0-linux-x64.AppImage` | 実行権限を付けて起動 |
+| Windows x64 | `AERIS-1.2.0-windows-x64-setup.exe` | インストーラーを実行 |
+| Windows x64・ポータブル | `AERIS-1.2.0-windows-x64-portable.zip` | フォルダー全体を展開して `AERIS/AERIS.exe` を起動 |
+| macOS・Apple Silicon | `AERIS-1.2.0-macos-arm64.dmg` | 開いてAERISをApplicationsへコピー |
+| macOS・Intel | `AERIS-1.2.0-macos-x64.dmg` | 開いてAERISをApplicationsへコピー |
+| Linux x64・Debian/Ubuntu系 | `AERIS-1.2.0-linux-x64.deb` | `sudo apt install ./AERIS-1.2.0-linux-x64.deb` |
+| Linux x64・AppImage | `AERIS-1.2.0-linux-x64.AppImage` | 実行権限を付けて起動 |
 
 Windowsでは [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) が必要です。ZIPにDLLが含まれる場合は実行ファイルと一緒に配置してください。macOSは12.0以降を対象とし、OSのWKWebViewを利用します。LinuxはUbuntu 22.04でビルドし、WebKitGTK 4.1を使用します。DEBは依存パッケージをAPTで解決します。AppImageの起動には環境に応じてFUSE 2互換ライブラリが必要です。
 
 ```sh
-chmod +x AERIS-1.1.0-linux-x64.AppImage
-./AERIS-1.1.0-linux-x64.AppImage
+chmod +x AERIS-1.2.0-linux-x64.AppImage
+./AERIS-1.2.0-linux-x64.AppImage
 ```
 
 各ファイルにSHA-256チェックサムを同梱しています。Windows版はAuthenticode未署名、macOS版はアドホック署名でAppleの公証は未実施です。そのためOSの初回起動確認が表示されることがあります。
@@ -114,7 +133,7 @@ WindowsでMinGW-w64を使う場合はGNU toolchainをインストールし、Pow
 
 1. `main`へのコード変更・Pull Request・手動実行で、フロントエンドとRustの単体テスト、アイコン再生成の一致確認、ネイティブビルド、統合テストを実行。
 2. インストーラー・ポータブル版・チェックサムをActionsのArtifactsへ保存（14日間）。README・スクリーンショットだけの変更ではネイティブ再ビルドを省略します。
-3. `v1.1.0` のようなバージョンタグをpushすると全構成をビルドし、**全構成の成功後**にGitHub Releaseを作成・公開します。
+3. `v1.2.0` のようなバージョンタグをpushすると全構成をビルドし、**全構成の成功後**にGitHub Releaseを作成・公開します。
 
 リリース時は `package.json` / `package-lock.json`、`src-tauri/Cargo.toml` / `Cargo.lock`、`src-tauri/tauri.conf.json` と画面のバージョン表記を揃えてからタグを付けます。秘密鍵や署名証明書は現在不要です。公証・正式コード署名は別途設定が必要です。
 
