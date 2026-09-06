@@ -11,7 +11,7 @@
 濃紺とシアン、透明感のある静かなデザイン。CPU・メモリ・ネットワークの状態を、メイン画面・常駐ガジェット・横長ミニバーで確認できます。
 
 - **透ける画面**：背後のデスクトップが見える半透明表示。文字とグラフの不透明度は維持します。
-- **3つの表示形態**：詳細なメイン画面、340 × 540のガジェット、560 × 76のミニバー。
+- **3つの表示形態**：詳細なメイン画面、340 × 740のガジェット、560 × 76のミニバー。
 - **静かな常駐**：1 / 2 / 5秒の更新間隔。すべての画面が非表示・最小化中は定期計測を停止。
 - **生成背景**：オーロラ・ガラスの波・星雲。初期設定では30秒ごとにランダム再生し、同じ画像を連続表示しません。
 - **プロセスを確認**：名前・PID検索、CPU・メモリの並べ替え、詳細と終了確認。
@@ -48,7 +48,7 @@ AERISの履歴はWindowsが保持する過去のUWP履歴とは別です。タ�
 
 | デスクトップガジェット | 横長ミニバー |
 |---|---|
-| <img src="docs/screenshots/gadget.png" alt="340×540の常駐ガジェット" width="340"> | <img src="docs/screenshots/mini.png" alt="560×76のミニバーをブラウザー内に表示" width="560"> |
+| <img src="docs/screenshots/gadget.png" alt="340×740の常駐ガジェット" width="340"> | <img src="docs/screenshots/mini.png" alt="560×76のミニバーをブラウザー内に表示" width="560"> |
 
 ### パフォーマンスとプロセス詳細
 
@@ -74,22 +74,22 @@ AERISの履歴はWindowsが保持する過去のUWP履歴とは別です。タ�
 
 ## 📦 ダウンロードと起動
 
-[Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest) から、自分のOS・CPUに合うファイルを選んでください。以下の `1.2.5` はバージョン番号です。
+[Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest) から、自分のOS・CPUに合うファイルを選んでください。以下の `1.2.6` はバージョン番号です。
 
 | OS / CPU | 配布ファイル | 起動方法 |
 |---|---|---|
-| Windows x64 | `AERIS-1.2.5-windows-x64-setup.exe` | インストーラーを実行 |
-| Windows x64・ポータブル | `AERIS-1.2.5-windows-x64-portable.zip` | フォルダー全体を展開して `AERIS/AERIS.exe` を起動 |
-| macOS・Apple Silicon | `AERIS-1.2.5-macos-arm64.dmg` | 開いてAERISをApplicationsへコピー |
-| macOS・Intel | `AERIS-1.2.5-macos-x64.dmg` | 開いてAERISをApplicationsへコピー |
-| Linux x64・Debian/Ubuntu系 | `AERIS-1.2.5-linux-x64.deb` | `sudo apt install ./AERIS-1.2.5-linux-x64.deb` |
-| Linux x64・AppImage | `AERIS-1.2.5-linux-x64.AppImage` | 実行権限を付けて起動 |
+| Windows x64 | `AERIS-1.2.6-windows-x64-setup.exe` | インストーラーを実行 |
+| Windows x64・ポータブル | `AERIS-1.2.6-windows-x64-portable.zip` | フォルダー全体を展開して `AERIS/AERIS.exe` を起動 |
+| macOS・Apple Silicon | `AERIS-1.2.6-macos-arm64.dmg` | 開いてAERISをApplicationsへコピー |
+| macOS・Intel | `AERIS-1.2.6-macos-x64.dmg` | 開いてAERISをApplicationsへコピー |
+| Linux x64・Debian/Ubuntu系 | `AERIS-1.2.6-linux-x64.deb` | `sudo apt install ./AERIS-1.2.6-linux-x64.deb` |
+| Linux x64・AppImage | `AERIS-1.2.6-linux-x64.AppImage` | 実行権限を付けて起動 |
 
 Windowsでは [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) が必要です。ZIPにDLLが含まれる場合は実行ファイルと一緒に配置してください。macOSは12.0以降を対象とし、OSのWKWebViewを利用します。LinuxはUbuntu 22.04でビルドし、WebKitGTK 4.1を使用します。DEBは依存パッケージをAPTで解決します。AppImageの起動には環境に応じてFUSE 2互換ライブラリが必要です。
 
 ```sh
-chmod +x AERIS-1.2.5-linux-x64.AppImage
-./AERIS-1.2.5-linux-x64.AppImage
+chmod +x AERIS-1.2.6-linux-x64.AppImage
+./AERIS-1.2.6-linux-x64.AppImage
 ```
 
 各ファイルにSHA-256チェックサムを同梱しています。Windows版はAuthenticode未署名、macOS版はアドホック署名でAppleの公証は未実施です。そのためOSの初回起動確認が表示されることがあります。
@@ -110,13 +110,15 @@ chmod +x AERIS-1.2.5-linux-x64.AppImage
 
 `Ctrl+F` で検索、`F5` で即時更新、`Esc` でダイアログを閉じる / 検索をクリア。
 
-**アプリ別の積み上げバー：** 概要画面では同じ実行ファイル名のプロセスを合算し、CPUとメモリで同じアプリに同じ色を付けます。上位アプリを色と凡例で表示し、残りは「その他」にまとめます。色の区画や凡例を押すと、そのアプリのプロセス一覧へ移動できます。CPUはバー上部のボタンで時間推移にも切り替え可能。ガジェットはCPU・メモリ・ネットワーク・ストレージをコンパクトな積み上げバーで表示し、重複する履歴グラフや順位一覧を省いています。マウスを重ねると区画の詳細を確認できます。
+**アプリ別の積み上げバー：** 概要画面では同じ実行ファイル名のプロセスを合算し、CPUとメモリで同じアプリに同じ色を付けます。上位アプリを色と凡例で表示し、残りは「その他」にまとめます。色の区画や凡例を押すと、そのアプリのプロセス一覧へ移動できます。CPUはバー上部のボタンで時間推移にも切り替え可能。ガジェットは各積み上げバーの下に上位3アプリの名前・数値・同じ色の比較バーを並べます。CPUとメモリを縦に表示し、履歴グラフの重複は省いています。残りのアプリの合計はバーにマウスを重ねると確認できます。
 
 概要画面のアプリ内訳バーは**計測できたプロセスの合計を100%**として表示します。別に表示するシステム全体のCPU使用率・物理メモリ使用率とは基準が異なります。プロセスメモリは共有ページを含むため、合算値は物理RAM消費量と一致しません。区画にマウスを重ねると、使用量・内訳比率・プロセス数を確認できます。
 
 ガジェットのメモリ容量バーはアプリ別の色で表示します。色付き部分の幅は実際の物理メモリ使用率で、右側は空き容量。色付き部分の中を計測したプロセスメモリの比率で配分するため、**各アプリの物理RAM占有量を表すものではありません**。注記とツールチップで基準を確認できます。CPUバーは計測したプロセスの比率で、見出しの数値はシステム全体のCPU使用率です。
 
-ガジェットのネットワークバーは受信／送信速度の割合です。回線容量の使用率やアプリ別通信量ではありません。ストレージはドライブごとに使用中／空き容量を積み上げ、読み書き速度も表示します。ドライブが多い場合はスクロールで確認でき、取得できない情報は明記します。
+WindowsではTCP確立接続・UDPソケットを持つアプリ名を表示します（IPv4／IPv6・ローカル接続を含む）。ネットワークのバーと各行は**接続・ソケット数で、通信量や通信中の判定ではありません**。受信・送信速度はアダプター合計を表示します。Windows IP Helper APIで取得し、管理者権限や定期的な外部プロセス起動は不要です。macOS／Linuxでは接続元表示が未対応であることを明記します。
+
+I/O欄はアプリごとの読み書き速度を合算し、ディスク自体の読み書き速度・容量を別に表示します。WindowsのプロセスI/Oにはファイル・ネットワーク・他のデバイスを含むため、ディスクだけの通信量とは区別してください。ドライブが多い場合はスクロールで確認できます。
 
 **プロセス一覧の比較バー：** CPUはシアン、メモリは紫。一覧のバーは、全プロセス中の各列の最多使用量を基準に比較し、検索しても基準を変えません。数値は実際のCPU使用率・常駐メモリ量です。「最多」のアプリを押すと該当PIDに絞り込めます。
 
@@ -160,7 +162,7 @@ WindowsでMinGW-w64を使う場合はGNU toolchainをインストールし、Pow
 
 1. `main`へのコード変更・Pull Request・手動実行で、フロントエンドとRustの単体テスト、アイコン再生成の一致確認、ネイティブビルド、統合テストを実行。
 2. インストーラー・ポータブル版・チェックサムをActionsのArtifactsへ保存（14日間）。README・スクリーンショットだけの変更ではネイティブ再ビルドを省略します。
-3. `v1.2.5` のようなバージョンタグをpushすると全構成をビルドし、**全構成の成功後**にGitHub Releaseを作成・公開します。
+3. `v1.2.6` のようなバージョンタグをpushすると全構成をビルドし、**全構成の成功後**にGitHub Releaseを作成・公開します。
 
 リリース時は `package.json` / `package-lock.json`、`src-tauri/Cargo.toml` / `Cargo.lock`、`src-tauri/tauri.conf.json` と画面のバージョン表記を揃えてからタグを付けます。秘密鍵や署名証明書は現在不要です。公証・正式コード署名は別途設定が必要です。
 

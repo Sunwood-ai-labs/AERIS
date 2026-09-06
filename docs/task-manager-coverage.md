@@ -18,6 +18,10 @@ Reference: [Microsoft Task Manager guide](https://learn.microsoft.com/en-us/trou
 | UI | Transparent main window, gadget and mini-bar retained. Windows native overview rendering and live data were observed; prior native gadget/mini transparency and settings checks remain applicable to their unchanged paths. Preview checks cover navigation, history, owner filtering, GPU/performance and management confirmation dialogs. README images are sample-data preview captures. |
 | Distribution | English main README, Japanese guide, SVG-derived icons, Windows x64/macOS arm64/macOS x64/Linux x64 build matrix, six packages and individual SHA-256 files. The release job verifies every package/hash and publishes only after all four native jobs pass. |
 
+## Gadget app rows in 1.2.6
+
+CPU and memory show the top three named apps under their stacked bars. Process I/O groups read/write rates by executable; Windows counters include non-disk I/O, so device I/O is displayed separately. Windows endpoint ownership uses IP Helper tables for established TCP and bound UDP sockets, including IPv4/IPv6 and local connections. Native tests hold real TCP/UDP fixtures open and check their PID ownership without admin rights. Endpoint counts are not throughput or proof of active traffic; per-process byte rates remain unsupported. macOS/Linux ownership reports an explicit unsupported state.
+
 ## Reproduce the checks
 
 ```sh
@@ -37,6 +41,6 @@ Windows-specific management is labeled on macOS/Linux. Unavailable GPU counters 
 
 macOS/Linux build and native integration coverage does not establish GUI/transparency behavior on every compositor. Interactive GUI validation has been performed on Windows and in the browser preview; destructive Explorer restart has guard coverage rather than a live desktop restart test.
 
-Scheduled tasks, packaged-app startup tasks, startup impact scoring, process network attribution, efficiency mode, affinity, dumps and user logoff are outside this release. This is everyday task-management coverage, not full Windows Task Manager parity. Permissions and OS counter availability can restrict individual fields or actions; AERIS reports errors without automatic elevation.
+Scheduled tasks, packaged-app startup tasks, startup impact scoring, per-process network byte rates, efficiency mode, affinity, dumps and user logoff are outside this release. This is everyday task-management coverage, not full Windows Task Manager parity. Permissions and OS counter availability can restrict individual fields or actions; AERIS reports errors without automatic elevation.
 
 Tests use dedicated processes, registry values and services. Private native samples include host/process information and must remain outside Git and public artifacts.

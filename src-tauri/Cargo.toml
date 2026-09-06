@@ -1,6 +1,6 @@
 [package]
 name = "aeris"
-version = "1.2.5"
+version = "1.2.6"
 description = "A translucent desktop system monitor and gadget"
 edition = "2021"
 
@@ -15,7 +15,7 @@ sysinfo = { version = "0.39", default-features = false, features = ["system", "n
 
 [target.'cfg(target_os = "windows")'.dependencies]
 webview2-com = "0.38.2"
-windows = { version = "0.61", default-features = false, features = ["std", "Win32_System_Performance", "Win32_Graphics_Dxgi", "Win32_Graphics_Dxgi_Common"] }
+windows = { version = "0.61", default-features = false, features = ["std", "Win32_System_Performance", "Win32_Graphics_Dxgi", "Win32_Graphics_Dxgi_Common", "Win32_NetworkManagement_IpHelper", "Win32_Networking_WinSock"] }
 
 [profile.release]
 opt-level = "s"

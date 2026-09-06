@@ -13,7 +13,7 @@ export function renderPerformance(s:Snapshot):string {
 }
 
 export function previewPerformance():NonNullable<Snapshot['performance']> {
- return {gpu:{adapters:[{id:'DEMO GPU',name:'Demo Graphics',usage:18,dedicatedUsed:1.2*1073741824,sharedUsed:256*1048576,dedicatedTotal:8*1073741824,sharedTotal:16*1073741824}],error:null,warming:false},cpus:Array.from({length:20},(_,k)=>({name:`CPU ${k}`,usage:12+(k*17)%55,frequency:2600})),totalSwap:8*1073741824,usedSwap:1.2*1073741824,
+ return {networkOwners:{owners:[{pid:15244,tcp:14,udp:3},{pid:14431,tcp:4,udp:2},{pid:14160,tcp:2,udp:0},{pid:14973,tcp:1,udp:0}],error:null},gpu:{adapters:[{id:'DEMO GPU',name:'Demo Graphics',usage:18,dedicatedUsed:1.2*1073741824,sharedUsed:256*1048576,dedicatedTotal:8*1073741824,sharedTotal:16*1073741824}],error:null,warming:false},cpus:Array.from({length:20},(_,k)=>({name:`CPU ${k}`,usage:12+(k*17)%55,frequency:2600})),totalSwap:8*1073741824,usedSwap:1.2*1073741824,
  disks:[{name:'NVMe SSD',mount:'C:\\',kind:'SSD',filesystem:'NTFS',total:1024*1073741824,available:620*1073741824,read:4.2*1048576,write:1.3*1048576}],
  interfaces:[{name:'Wi-Fi',mac:'00:00:00:00:00:00',download:84*1024,upload:44*1024,totalReceived:23*1048576,totalTransmitted:8*1048576}]};
 }

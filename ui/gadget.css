@@ -4,7 +4,7 @@
 .g-summary-heading h2{font:10px var(--number);letter-spacing:.12em;color:#b9cddd}
 .g-summary-heading>strong{font:22px var(--number);letter-spacing:-.02em;color:#dce7f3;white-space:nowrap}
 .g-summary-heading>strong small{font-size:12px;margin-left:2px}
-.g-summary-bar{display:flex;width:100%;height:22px;border-radius:4px;background:#10263985;box-shadow:inset 0 0 0 1px #7595b34a;overflow:hidden}
+.g-summary-bar{display:flex;width:100%;height:14px;border-radius:4px;background:#10263985;box-shadow:inset 0 0 0 1px #7595b34a;overflow:hidden}
 .g-summary-segment{display:flex;align-items:center;justify-content:center;min-width:0;flex-shrink:0;background:var(--segment-color);border-right:1px solid #0b1b2b44;color:#061724;font:600 9px 'Segoe UI',sans-serif}
 .g-summary-segment>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;padding:0 5px}
 .g-summary-segment[style*="#31465b"]{color:#dce7f3}
@@ -17,3 +17,25 @@
 .g-disk-heading>span{color:#a9bdcf;white-space:nowrap}
 .g-summary-disk+.g-summary-disk{margin-top:15px}
 .g-summary-help{font-size:8px;color:#91abc0;margin:10px 0}
+.g-summary-heading h2>span{font:9px 'Segoe UI',sans-serif;letter-spacing:0;margin-left:7px;color:#98b1c6}
+.g-task-list{margin-top:6px}
+.g-task-row{display:flex;align-items:center;gap:7px;height:25px;border-bottom:1px solid #8eacc31a}
+.g-task-row>i{width:6px;height:6px;border-radius:2px;background:var(--app-color);flex-shrink:0}
+.g-task-name{font-size:10px;color:#e2edf5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.g-task-amount{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;max-width:62%}
+.g-task-amount strong{font:10px var(--number);color:var(--app-color);white-space:nowrap}
+.g-task-meter{display:flex;justify-content:flex-end;width:72px;height:3px}
+.g-task-meter>i{height:100%;background:var(--app-color);border-radius:2px}
+.g-net-total{font:10px/1.4 var(--number);text-align:right;color:#abd5e4}
+.g-summary-disk{margin-top:10px;padding-top:8px;border-top:1px solid #8eacc32b}
+.g-summary-disk .g-disk-heading{font-size:9px;margin-bottom:0;gap:5px}
+.g-summary-disk .g-summary-caption{margin-top:3px}
+.g-summary-card{padding:7px 0}
+.g-summary-heading{min-height:20px;margin-bottom:5px}
+.g-summary-heading>strong{font-size:18px;line-height:20px}
+.g-summary-bar{height:12px}
+.g-summary-segment>span{display:none}
+.g-task-list{margin-top:4px}
+.g-task-row{height:22px}
+.g-summary-caption{margin-top:4px;line-height:1.4}
+.g-summary-disk{padding-top:6px;margin-top:7px}

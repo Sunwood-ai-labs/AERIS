@@ -8,7 +8,7 @@
 
 ## 🫧 Meet AERIS
 
-Midnight blue, cyan accents, and a view through your desktop. Monitor CPU, memory, network traffic, uptime, and processes through a main window, a 340 × 540 gadget, or a 560 × 76 mini-bar. The application interface is currently Japanese.
+Midnight blue, cyan accents, and a view through your desktop. Monitor CPU, memory, network traffic, uptime, and processes through a main window, a 340 × 740 gadget, or a 560 × 76 mini-bar. The application interface is currently Japanese.
 
 - Transparent native windows with adjustable surface opacity and fully opaque text and graphs.
 - Three generated backgrounds: Aurora, Glass Waves, and Nebula. A shuffled loop changes images every 30 seconds by default, without consecutive repeats.
@@ -22,7 +22,7 @@ Version 1.2 adds the main everyday Task Manager workflows:
 
 | Area | AERIS capabilities |
 |---|---|
-| Processes / details | Sort CPU, memory and disk I/O; inspect owner, parent PID, command-line arguments, start time and CPU time; open file location |
+| Processes / details | Sort CPU, memory and process I/O; inspect owner, parent PID, command-line arguments, start time and CPU time; open file location |
 | Process actions | Run an executable with explicit arguments; terminate a process or its children; change priority and restart Explorer on Windows |
 | Performance | Per-logical-CPU usage/frequency, physical memory and swap, disk capacity/read/write rates, individual network adapters |
 | GPU (Windows) | Live PDH utilization and dedicated/shared memory while the performance page is visible; unavailable counters show an error |
@@ -33,7 +33,7 @@ Version 1.2 adds the main everyday Task Manager workflows:
 
 Management actions require confirmation in the app. Access-denied errors are reported without silently elevating the app. Startup/service/session inventories are requested on demand, so they do not add a polling process while the gadget is idle. Windows management requires Windows PowerShell 5.1 and the relevant OS providers. Startup state uses Windows's `StartupApproved` registry representation; unknown states are read-only. Previous values are backed up under `HKCU\Software\AERIS\StartupStateBackup`.
 
-AERIS history is not Windows's historical UWP usage database. Scheduled tasks, packaged-app startup tasks, startup impact scoring, process network attribution, efficiency mode, affinity, dumps and user logoff are not implemented. Some process fields are inaccessible without permission. See the [feature verification checklist](docs/task-manager-coverage.md).
+AERIS history is not Windows's historical UWP usage database. Scheduled tasks, packaged-app startup tasks, startup impact scoring, per-process network byte rates, efficiency mode, affinity, dumps and user logoff are not implemented. Some process fields are inaccessible without permission. See the [feature verification checklist](docs/task-manager-coverage.md).
 
 ## 📸 Screenshots
 
@@ -47,7 +47,7 @@ These are captures of the implemented UI in its browser preview, using sample me
 
 | Desktop gadget | Mini-bar |
 |---|---|
-| <img src="docs/screenshots/gadget.png" alt="340×540 desktop gadget" width="340"> | <img src="docs/screenshots/mini.png" alt="560×76 mini-bar inside the browser preview" width="560"> |
+| <img src="docs/screenshots/gadget.png" alt="340×740 desktop gadget" width="340"> | <img src="docs/screenshots/mini.png" alt="560×76 mini-bar inside the browser preview" width="560"> |
 
 ### Performance and process details
 
@@ -73,22 +73,22 @@ These are captures of the implemented UI in its browser preview, using sample me
 
 ## 📦 Download and run
 
-Choose the package for your OS and CPU from [Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest). `1.2.5` below is the version number.
+Choose the package for your OS and CPU from [Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest). `1.2.6` below is the version number.
 
 | OS / CPU | File | Install / launch |
 |---|---|---|
-| Windows x64 | `AERIS-1.2.5-windows-x64-setup.exe` | Run the installer |
-| Windows x64 portable | `AERIS-1.2.5-windows-x64-portable.zip` | Extract the whole folder and run `AERIS/AERIS.exe` |
-| macOS Apple Silicon | `AERIS-1.2.5-macos-arm64.dmg` | Open and copy AERIS to Applications |
-| macOS Intel | `AERIS-1.2.5-macos-x64.dmg` | Open and copy AERIS to Applications |
-| Linux x64 Debian/Ubuntu | `AERIS-1.2.5-linux-x64.deb` | `sudo apt install ./AERIS-1.2.5-linux-x64.deb` |
-| Linux x64 AppImage | `AERIS-1.2.5-linux-x64.AppImage` | Make executable and launch |
+| Windows x64 | `AERIS-1.2.6-windows-x64-setup.exe` | Run the installer |
+| Windows x64 portable | `AERIS-1.2.6-windows-x64-portable.zip` | Extract the whole folder and run `AERIS/AERIS.exe` |
+| macOS Apple Silicon | `AERIS-1.2.6-macos-arm64.dmg` | Open and copy AERIS to Applications |
+| macOS Intel | `AERIS-1.2.6-macos-x64.dmg` | Open and copy AERIS to Applications |
+| Linux x64 Debian/Ubuntu | `AERIS-1.2.6-linux-x64.deb` | `sudo apt install ./AERIS-1.2.6-linux-x64.deb` |
+| Linux x64 AppImage | `AERIS-1.2.6-linux-x64.AppImage` | Make executable and launch |
 
 Windows requires [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/). Keep any DLLs included in the ZIP beside the executable. macOS targets 12.0+ and uses system WKWebView. Linux packages are built on Ubuntu 22.04 using WebKitGTK 4.1. APT resolves DEB dependencies; AppImage may require a FUSE 2 compatibility library on your distribution.
 
 ```sh
-chmod +x AERIS-1.2.5-linux-x64.AppImage
-./AERIS-1.2.5-linux-x64.AppImage
+chmod +x AERIS-1.2.6-linux-x64.AppImage
+./AERIS-1.2.6-linux-x64.AppImage
 ```
 
 Individual SHA-256 files accompany every package. Windows builds are not Authenticode-signed. macOS builds use ad-hoc signing and are not Apple-notarized, so the OS may prompt or restrict first launch.
@@ -108,13 +108,15 @@ Individual SHA-256 files accompany every package. Windows builds are not Authent
 
 Keyboard shortcuts: `Ctrl+F` search, `F5` refresh, `Esc` close a dialog or clear search.
 
-**Stacked app breakdown:** The overview groups processes with the same executable name and gives each app a stable color shared by CPU and memory. Colored segments and legends show the largest contributors, with the remainder combined into “Other.” Click an app segment or legend to filter its processes; switch CPU to time history with the button above its bar. The gadget presents CPU, memory, network and storage as compact stacked bars, without duplicate history charts or ranked lists. Hover a segment for its details.
+**Stacked app breakdown:** The overview groups processes with the same executable name and gives each app a stable color shared by CPU and memory. Colored segments and legends show the largest contributors, with the remainder combined into “Other.” Click an app segment or legend to filter its processes; switch CPU to time history with the button above its bar. The gadget places a stacked bar above three named app rows for each resource, with matching colors and values. CPU and memory are shown vertically without a duplicate history chart. Hover a segment for details on the remaining apps.
 
 The overview's app-composition bars normalize the sum of measured processes to 100%, while the separate system meters retain actual overall CPU and physical-memory percentages. These totals can differ: process memory includes shared pages, so its sum is not physical RAM consumption. Hover a segment to see the app's amount, share and process count.
 
 The gadget's memory-capacity bar uses app colors. Its filled width is actual physical memory usage, with free capacity on the right; colors subdivide the filled area in proportion to measured process memory. They do **not** represent each app's physical RAM allocation. The label and hover descriptions explain this distinction. Its CPU bar shows measured process proportions; the headline retains total system CPU usage.
 
-The gadget network bar compares receive/send rates, not link-capacity utilization or per-app traffic. Storage bars show used/free space separately for each volume, with read/write rates below. More volumes remain accessible by scrolling; missing data is labeled explicitly.
+On Windows, the gadget identifies apps holding established TCP connections and bound UDP sockets (IPv4/IPv6, including local connections). Its network bar and app rows show **endpoint counts, not bytes or proof of active traffic**; receive/send rates remain adapter totals. This uses the Windows IP Helper API without elevation or a polling subprocess. macOS/Linux explicitly show that endpoint ownership is unavailable.
+
+The I/O section groups measured read/write rates by app and shows device read/write rates and capacity separately. On Windows, process I/O includes files, network and other devices; it must not be interpreted as physical disk-only traffic. Additional volumes can be scrolled into view.
 
 **Process comparison colors:** CPU is cyan and memory is violet. Individual process bars compare against the largest process in each column across the entire snapshot; filtering does not change that scale. Numbers retain actual CPU percentages and resident-memory amounts. Top-consumer shortcuts filter to the relevant PID.
 
@@ -156,7 +158,7 @@ For MinGW-w64 on Windows, install the GNU Rust toolchain and set `$env:RUSTUP_TO
 
 1. Code pushes to `main`, pull requests, and manual runs execute frontend/Rust unit tests, deterministic icon checks, native builds, and integration tests.
 2. Installable packages, the Windows portable ZIP, and checksums are uploaded as Actions artifacts for 14 days. README/screenshot-only changes skip native rebuilds.
-3. Pushing a version tag such as `v1.2.5` builds every target and automatically publishes a GitHub Release **only after every target succeeds**.
+3. Pushing a version tag such as `v1.2.6` builds every target and automatically publishes a GitHub Release **only after every target succeeds**.
 
 Before tagging, align versions in `package.json` / `package-lock.json`, `src-tauri/Cargo.toml` / `Cargo.lock`, `src-tauri/tauri.conf.json`, and UI labels. No signing secrets are currently needed; official code signing and notarization require separate configuration.
 
