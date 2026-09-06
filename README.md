@@ -1,94 +1,90 @@
 <div align="center">
-  <img src="docs/assets/aeris-banner.svg" alt="AERIS — デスクトップに、軽やかな視界を。" width="900">
-  <p>透けるウィンドウで、PCの今を見守る。<br>Windows・macOS・Linux向けのシステムモニター & 常駐ガジェット。</p>
+  <img src="docs/assets/aeris-banner.svg" alt="AERIS — A lighter view of your desktop" width="900">
+  <p>A translucent system monitor, desktop gadget, and mini-bar for Windows, macOS, and Linux.</p>
   <p><a href="https://github.com/Sunwood-ai-labs/AERIS/actions/workflows/desktop.yml"><img src="https://github.com/Sunwood-ai-labs/AERIS/actions/workflows/desktop.yml/badge.svg" alt="Desktop builds"></a> <img src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-167CA0" alt="Windows / macOS / Linux"> <img src="https://img.shields.io/badge/Tauri-2-24C8DB" alt="Tauri 2"> <img src="https://img.shields.io/badge/license-MIT-39CFF5" alt="MIT"></p>
-  <p><strong>日本語</strong> · <a href="README.en.md">English</a></p>
-  <p><a href="https://github.com/Sunwood-ai-labs/AERIS/releases/latest"><strong>最新版をダウンロード</strong></a> · <a href="https://github.com/Sunwood-ai-labs/AERIS/actions/workflows/desktop.yml">ビルド状況</a></p>
+  <p><strong>English</strong> · <a href="README.ja.md">日本語</a></p>
+  <p><a href="https://github.com/Sunwood-ai-labs/AERIS/releases/latest"><strong>Download the latest release</strong></a> · <a href="https://github.com/Sunwood-ai-labs/AERIS/actions/workflows/desktop.yml">Build status</a></p>
 </div>
 
-## 🫧 AERISについて
+## 🫧 Meet AERIS
 
-濃紺とシアン、透明感のある静かなデザイン。CPU・メモリ・ネットワークの状態を、メイン画面・常駐ガジェット・横長ミニバーで確認できます。
+Midnight blue, cyan accents, and a view through your desktop. Monitor CPU, memory, network traffic, uptime, and processes through a main window, a 340 × 520 gadget, or a 560 × 76 mini-bar. The application interface is currently Japanese.
 
-- **透ける画面**：背後のデスクトップが見える半透明表示。文字とグラフの不透明度は維持します。
-- **3つの表示形態**：詳細なメイン画面、340 × 520のガジェット、560 × 76のミニバー。
-- **静かな常駐**：1 / 2 / 5秒の更新間隔。すべての画面が非表示・最小化中は定期計測を停止。
-- **生成背景**：オーロラ・ガラスの波・星雲。初期設定では30秒ごとにランダム再生し、同じ画像を連続表示しません。
-- **プロセスを確認**：名前・PID検索、CPU・メモリの並べ替え、詳細と終了確認。
-- **ローカルで動作**：ログイン・外部サーバー不要。AERISによる利用状況の収集・送信はありません。
+- Transparent native windows with adjustable surface opacity and fully opaque text and graphs.
+- Three generated backgrounds: Aurora, Glass Waves, and Nebula. A shuffled loop changes images every 30 seconds by default, without consecutive repeats.
+- Search by name or PID, sort processes, inspect details, and confirm before terminating a process.
+- Shared Rust sampling at 1, 2, or 5 seconds. Periodic sampling stops when all windows are hidden or minimized.
+- Runs locally without an account or external service. AERIS does not collect or send usage telemetry.
 
-## 📸 スクリーンショット
+## 📸 Screenshots
 
-実装済みUIのブラウザープレビューを撮影しています。数値・プロセス名はサンプルデータです。OS別の実機画面ではなく、ネイティブの透過効果は背後の壁紙やOSによって変わります。
+These are captures of the implemented UI in its browser preview, using sample metrics and process names. They are not OS-specific native screenshots. Native transparency depends on the desktop behind the window and the operating system.
 
-### メイン画面
+### Main window
 
-![CPU・メモリ・ネットワークとプロセスを一覧できるAERIS](docs/screenshots/overview.png)
+![AERIS overview with CPU, memory, network and processes](docs/screenshots/overview.png)
 
-### 常駐ガジェットとミニバー
+### Desktop gadget and mini-bar
 
-| デスクトップガジェット | 横長ミニバー |
+| Desktop gadget | Mini-bar |
 |---|---|
-| <img src="docs/screenshots/gadget.png" alt="340×520の常駐ガジェット" width="340"> | <img src="docs/screenshots/mini.png" alt="560×76のミニバーをブラウザー内に表示" width="560"> |
+| <img src="docs/screenshots/gadget.png" alt="340×520 desktop gadget" width="340"> | <img src="docs/screenshots/mini.png" alt="560×76 mini-bar inside the browser preview" width="560"> |
 
 <details>
-<summary>背景・透明度の設定画面を見る</summary>
+<summary>Background and transparency settings</summary>
 
-![生成背景、切り替え間隔、パネルと画像の濃さを選べる設定画面](docs/screenshots/settings.png)
+![Generated backgrounds, rotation timing and independent panel/image opacity controls](docs/screenshots/settings.png)
 
 </details>
 
-## 📦 ダウンロードと起動
+## 📦 Download and run
 
-[Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest) から、自分のOS・CPUに合うファイルを選んでください。以下の `1.1.0` はバージョン番号です。
+Choose the package for your OS and CPU from [Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest). `1.1.0` below is the version number.
 
-| OS / CPU | 配布ファイル | 起動方法 |
+| OS / CPU | File | Install / launch |
 |---|---|---|
-| Windows x64 | `AERIS-1.1.0-windows-x64-setup.exe` | インストーラーを実行 |
-| Windows x64・ポータブル | `AERIS-1.1.0-windows-x64-portable.zip` | フォルダー全体を展開して `AERIS/AERIS.exe` を起動 |
-| macOS・Apple Silicon | `AERIS-1.1.0-macos-arm64.dmg` | 開いてAERISをApplicationsへコピー |
-| macOS・Intel | `AERIS-1.1.0-macos-x64.dmg` | 開いてAERISをApplicationsへコピー |
-| Linux x64・Debian/Ubuntu系 | `AERIS-1.1.0-linux-x64.deb` | `sudo apt install ./AERIS-1.1.0-linux-x64.deb` |
-| Linux x64・AppImage | `AERIS-1.1.0-linux-x64.AppImage` | 実行権限を付けて起動 |
+| Windows x64 | `AERIS-1.1.0-windows-x64-setup.exe` | Run the installer |
+| Windows x64 portable | `AERIS-1.1.0-windows-x64-portable.zip` | Extract the whole folder and run `AERIS/AERIS.exe` |
+| macOS Apple Silicon | `AERIS-1.1.0-macos-arm64.dmg` | Open and copy AERIS to Applications |
+| macOS Intel | `AERIS-1.1.0-macos-x64.dmg` | Open and copy AERIS to Applications |
+| Linux x64 Debian/Ubuntu | `AERIS-1.1.0-linux-x64.deb` | `sudo apt install ./AERIS-1.1.0-linux-x64.deb` |
+| Linux x64 AppImage | `AERIS-1.1.0-linux-x64.AppImage` | Make executable and launch |
 
-Windowsでは [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) が必要です。ZIPにDLLが含まれる場合は実行ファイルと一緒に配置してください。macOSは12.0以降を対象とし、OSのWKWebViewを利用します。LinuxはUbuntu 22.04でビルドし、WebKitGTK 4.1を使用します。DEBは依存パッケージをAPTで解決します。AppImageの起動には環境に応じてFUSE 2互換ライブラリが必要です。
+Windows requires [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/). Keep any DLLs included in the ZIP beside the executable. macOS targets 12.0+ and uses system WKWebView. Linux packages are built on Ubuntu 22.04 using WebKitGTK 4.1. APT resolves DEB dependencies; AppImage may require a FUSE 2 compatibility library on your distribution.
 
 ```sh
 chmod +x AERIS-1.1.0-linux-x64.AppImage
 ./AERIS-1.1.0-linux-x64.AppImage
 ```
 
-各ファイルにSHA-256チェックサムを同梱しています。Windows版はAuthenticode未署名、macOS版はアドホック署名でAppleの公証は未実施です。そのためOSの初回起動確認が表示されることがあります。
+Individual SHA-256 files accompany every package. Windows builds are not Authenticode-signed. macOS builds use ad-hoc signing and are not Apple-notarized, so the OS may prompt or restrict first launch.
 
-**検証範囲**：Windows 11 x64ではネイティブ画面を確認しています。4構成すべてでCIビルド・単体テスト・ネイティブ統合テストを実行します。macOS/LinuxのGUI操作・透過表示は実機で未確認です。Linuxのトレイはデスクトップ環境や拡張機能、透過・最前面固定・配置はコンポジターやWaylandの制約によって異なります。
+**Validation scope:** native UI was checked on Windows 11 x64. CI builds, unit tests, and native integration tests run on all four targets. macOS/Linux GUI interaction and transparency have not been manually verified. Linux tray availability depends on desktop extensions; transparency, positioning and always-on-top behavior depend on the compositor and Wayland restrictions.
 
-## 🎛️ 使い方
+## 🎛️ Controls
 
-| 操作 | 内容 |
+| Control | Action |
 |---|---|
-| 概要 | CPUの直近60秒グラフ、メモリ、ネットワーク、稼働時間 |
-| プロセス | 名前・PID検索、列見出しで並べ替え、選択して詳細・終了 |
-| ガジェット表示 | 小窓を表示。ピンで最前面固定、マイナスでミニバーに切り替え |
-| 設定 → 透ける背景 | ランダム再生・画像固定・画像なし、切り替え間隔、パネルと画像の濃さ |
-| 閉じる | Windows/macOSは非表示、Linuxのメイン画面は最小化。ガジェットの×は小窓だけを非表示 |
-| 再表示 | トレイの「メイン画面を開く」。Windowsはトレイ左クリック、macOSはDock、Linuxはタスク切り替えからも復帰 |
-| 完全終了 | 設定またはトレイメニュー → AERISを終了 |
+| 概要 / プロセス | Overview / process list |
+| ガジェット表示 | Open the gadget; pin for always-on-top, minus for mini-bar |
+| 設定 → 透ける背景 | Random loop, fixed image, image off, timing, panel/image opacity |
+| Close | Hide on Windows/macOS; minimize the main window on Linux. Closing the gadget hides only the gadget |
+| Restore | Tray menu → メイン画面を開く; also Windows tray left-click, macOS Dock, or Linux task switcher |
+| AERISを終了 | Quit from settings or the tray menu |
 
-`Ctrl+F` で検索、`F5` で即時更新、`Esc` でダイアログを閉じる / 検索をクリア。
+Keyboard shortcuts: `Ctrl+F` search, `F5` refresh, `Esc` close a dialog or clear search.
 
-設定はユーザーのアプリ設定フォルダーに保存します。初期値はパネル70%、画像24%。背景の切り替えは15秒・30秒・1分・5分。設定はメイン画面とガジェットに共通で、ランダム順序は各ウィンドウで独立します。OS起動時の自動起動登録は行いません。
+Preferences persist in the user's application settings directory. Defaults: 70% panel opacity, 24% image opacity. Background intervals: 15 seconds, 30 seconds, 1 minute, or 5 minutes. Appearance preferences are shared, while each window shuffles independently. Automatic startup at login is not registered.
 
-## ⚡ 軽量化の方針
+## ⚡ Resource use
 
-Tauri 2 + Rustと小さなTypeScriptフロントエンドで構成し、WindowsはWebView2、macOSはWKWebView、LinuxはWebKitGTKを利用します。独立したChromium一式やバックグラウンドサービスは同梱しません。
+AERIS uses Tauri 2, Rust, a small TypeScript frontend, and WebView2 on Windows, WKWebView on macOS, or WebKitGTK on Linux. It does not bundle a separate Chromium distribution or install a background service. One sampler serves all windows; the process table renders around the visible rows.
 
-計測処理は1つで全画面に共有し、プロセス一覧は表示範囲を中心に描画します。非表示・最小化中は背景の切り替えタイマーを止め、WindowsではWebView2の省メモリ設定も適用します。背景は静止画で、フェードは切り替え時の1.2秒だけです。
+Hidden/minimized windows stop background rotation timers; on Windows they also receive a WebView2 memory-saving hint. Wallpapers are still images, with a 1.2-second fade only on changes. Resource use depends on the OS webview, open windows, backgrounds, and the machine. Executable size is not runtime memory use.
 
-CPU・メモリの使用量はOSのWebView、開いている画面数、背景画像、環境によって変わります。実行ファイルのサイズと実行時メモリは別の指標です。
+## 🛠️ Develop and build
 
-## 🛠️ 開発・ビルド
-
-Node.js 22以降、Rust stable、および [TauriのOS別前提条件](https://v2.tauri.app/start/prerequisites/) が必要です。Windows標準はMSVC + Microsoft C++ Build Tools、macOSはXcode Command Line Tools、LinuxはWebKitGTK/GTKなどの開発パッケージを使用します。
+Install Node.js 22+, Rust stable, and the [Tauri prerequisites for your OS](https://v2.tauri.app/start/prerequisites/). Windows defaults to MSVC with Microsoft C++ Build Tools; macOS requires Xcode Command Line Tools; Linux requires WebKitGTK/GTK development packages.
 
 ```sh
 git clone https://github.com/Sunwood-ai-labs/AERIS.git
@@ -104,32 +100,30 @@ cargo test --release --locked --manifest-path src-tauri/Cargo.toml
 npm run tauri -- build
 ```
 
-WindowsでMinGW-w64を使う場合はGNU toolchainをインストールし、PowerShellで `$env:RUSTUP_TOOLCHAIN='stable-x86_64-pc-windows-gnu'` を設定してください。`gcc`・`windres`・`dlltool` をPATHから実行できるようにします。ローカル用 `./build.ps1` はGNUを選択してビルド・テストし、`release/AERIS-Windows-x64.zip` を作成します。配布ファイルの置き換え前にはAERISを完全終了してください。
+For MinGW-w64 on Windows, install the GNU Rust toolchain and set `$env:RUSTUP_TOOLCHAIN='stable-x86_64-pc-windows-gnu'` in PowerShell. Put `gcc`, `windres`, and `dlltool` on PATH. The local `./build.ps1` helper selects GNU, builds/tests, and creates `release/AERIS-Windows-x64.zip`. Fully quit AERIS before replacing an existing executable.
 
-`npm run dev` はサンプル表示のブラウザープレビューです。ネイティブ版の接続エラーをサンプルで代用しません。
+`npm run dev` provides a clearly labeled browser sample preview. Native connection errors never silently switch to sample data.
 
 ## 🚀 CI/CD
 
-[Desktop builds](.github/workflows/desktop.yml) がWindows x64、macOS arm64/x64、Linux x64をそれぞれのOSランナーでビルドします。
+[Desktop builds](.github/workflows/desktop.yml) builds Windows x64, macOS arm64/x64, and Linux x64 on their respective OS runners.
 
-1. `main`へのコード変更・Pull Request・手動実行で、フロントエンドとRustの単体テスト、アイコン再生成の一致確認、ネイティブビルド、統合テストを実行。
-2. インストーラー・ポータブル版・チェックサムをActionsのArtifactsへ保存（14日間）。README・スクリーンショットだけの変更ではネイティブ再ビルドを省略します。
-3. `v1.1.0` のようなバージョンタグをpushすると全構成をビルドし、**全構成の成功後**にGitHub Releaseを作成・公開します。
+1. Code pushes to `main`, pull requests, and manual runs execute frontend/Rust unit tests, deterministic icon checks, native builds, and integration tests.
+2. Installable packages, the Windows portable ZIP, and checksums are uploaded as Actions artifacts for 14 days. README/screenshot-only changes skip native rebuilds.
+3. Pushing a version tag such as `v1.1.0` builds every target and automatically publishes a GitHub Release **only after every target succeeds**.
 
-リリース時は `package.json` / `package-lock.json`、`src-tauri/Cargo.toml` / `Cargo.lock`、`src-tauri/tauri.conf.json` と画面のバージョン表記を揃えてからタグを付けます。秘密鍵や署名証明書は現在不要です。公証・正式コード署名は別途設定が必要です。
+Before tagging, align versions in `package.json` / `package-lock.json`, `src-tauri/Cargo.toml` / `Cargo.lock`, `src-tauri/tauri.conf.json`, and UI labels. No signing secrets are currently needed; official code signing and notarization require separate configuration.
 
-## 🔬 計測の仕様
+## 🔬 Measurement notes
 
-- CPUは全論理プロセッサに対する実行時間の割合。Windows標準タスクマネージャーの周波数補正値とは異なる場合があります。
-- プロセスメモリは常駐メモリ（Windowsではワーキングセット）で共有ページを含み、合計は物理メモリ使用量と一致しません。
-- ネットワークはループバックを除くインターフェイスの合計。VPNや仮想アダプターでは二重計上される場合があります。
-- 自分自身と既知のOS重要プロセスの終了を防ぎ、終了時はPIDと開始時刻を再確認します。権限で取得・終了できないプロセスもあります。
-- `--self-test <出力JSON>` は実データ取得と専用に生成した子プロセスの終了・保護処理を検証します。GUIテストではありません。実機のプロセス名・パスを含む出力JSONはGit・公開CI成果物から除外しています。
+CPU is execution time normalized across logical processors; it may differ from Windows Task Manager's frequency-adjusted readings. Process memory is resident memory (working set on Windows), including shared pages. Network totals exclude loopback but may double-count VPN/virtual interfaces.
 
-## 🎨 デザインとライセンス
+AERIS protects itself and known critical OS processes, checks PID and start time before termination, and requires confirmation. Some process information/actions remain unavailable without sufficient access.
 
-AERISのアイコンは「A」と空気の流れを組み合わせた専用SVGです。[ベクター原本](brand/aeris-mark.svg)を編集し、`npm run icons` でアプリ・トレイ・Windows ICO・macOS ICNS・Linux PNG・READMEバナーを再生成できます。画面内ロゴはSVGを直接表示します。[アイコンの管理方法](brand/README.md)
+`--self-test <output.json>` checks live sampling, protection, and termination of an exclusively test-created child. It does not test GUI rendering. Its output includes machine process names/paths and is excluded from Git and public CI artifacts.
 
-背景画像は組み込みimagegenで生成したRGBA PNGを同梱しています。[生成の記録](docs/backgrounds.md)を参照してください。
+## 🎨 Design and license
 
-ソースコードは [MIT License](LICENSE)。依存ライブラリについては [THIRD_PARTY.md](THIRD_PARTY.md) に記載しています。
+The custom AERIS symbol combines an **A** with a sweep of air. Edit the [vector master](brand/aeris-mark.svg), then run `npm run icons` to regenerate application/tray icons, Windows ICO, macOS ICNS, Linux PNG, and the README banner. The interface renders SVG directly. See the [identity guide](brand/README.md).
+
+Three generated RGBA backgrounds are included. See [generation notes](docs/backgrounds.md). Source code is under the [MIT License](LICENSE); dependency information is in [THIRD_PARTY.md](THIRD_PARTY.md).

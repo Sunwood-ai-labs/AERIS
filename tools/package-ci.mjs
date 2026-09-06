@@ -27,7 +27,7 @@ if(process.platform==='win32'){
  const stage=path.resolve('release/portable/AERIS'); fs.mkdirSync(stage,{recursive:true});
  fs.copyFileSync(executable,path.join(stage,'AERIS.exe'));
  for(const file of fs.readdirSync(build).filter(name=>name.endsWith('.dll')))fs.copyFileSync(path.join(build,file),path.join(stage,file));
- for(const file of ['README.md','README.en.md','LICENSE','THIRD_PARTY.md'])fs.copyFileSync(file,path.join(stage,file));
+ for(const file of ['README.md','README.ja.md','LICENSE','THIRD_PARTY.md'])fs.copyFileSync(file,path.join(stage,file));
  for(const dir of ['docs','brand'])fs.cpSync(dir,path.join(stage,dir),{recursive:true});
  const zip=path.join(output,`AERIS-${version}-${platform}-portable.zip`);
  const escape=value=>"'"+value.replaceAll("'","''")+"'";

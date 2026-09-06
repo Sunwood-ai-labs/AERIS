@@ -26,7 +26,7 @@ try {
             if ($imports -match [regex]::Escape($dll)) { Copy-Item -LiteralPath (Join-Path $gccDirectory $dll) -Destination $releaseDirectory -Force }
         }
     }
-    Copy-Item -LiteralPath 'README.md','README.en.md','LICENSE','THIRD_PARTY.md' -Destination $releaseDirectory -Force
+    Copy-Item -LiteralPath 'README.md','README.ja.md','LICENSE','THIRD_PARTY.md' -Destination $releaseDirectory -Force
     Copy-Item -LiteralPath 'docs' -Destination $releaseDirectory -Recurse -Force
     Copy-Item -LiteralPath 'brand' -Destination $releaseDirectory -Recurse -Force
     if (-not $SkipTests) {
