@@ -7,6 +7,7 @@ AERIS uses these open-source components. Exact resolved versions are in `package
 - Lucide icons — ISC — https://github.com/lucide-icons/lucide
 - Serde / serde_json — MIT / Apache-2.0 — https://github.com/serde-rs/serde
 - Vite, TypeScript and tsx are build-time tools.
+- resvg-js — MPL-2.0 — https://github.com/thx/resvg-js — build-time SVG rendering for Windows icon exports.
 
 The Windows build uses Microsoft Edge WebView2. `WebView2Loader.dll` is supplied by the WebView2 SDK through `webview2-com-sys`.
 The separately installed WebView2 Runtime is provided and updated by Microsoft.

@@ -75,4 +75,6 @@ AERIS protects itself and critical Windows processes, checks PID and start time 
 
 ## 🎨 Design and license
 
+The custom AERIS symbol combines an **A** with a sweep of air. Edit the [vector master](brand/aeris-mark.svg), then run `npm run icons` to regenerate application/tray icons, multi-resolution Windows ICO, and the README banner. The interface renders SVG directly. See the [identity guide](brand/README.md).
+
 Three generated RGBA backgrounds are included. See [generation notes](docs/backgrounds.md). Source code is under the [MIT License](LICENSE); dependency and WebView2 information is in [THIRD_PARTY.md](THIRD_PARTY.md).

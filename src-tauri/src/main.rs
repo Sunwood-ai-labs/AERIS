@@ -238,7 +238,7 @@ fn main() {
                 &MenuItem::with_id(app,"pause","計測を一時停止 / 再開",true,None::<&str>)?,
                 &MenuItem::with_id(app,"quit","AERISを終了",true,None::<&str>)?,
             ])?;
-            let icon=tauri::image::Image::from_bytes(include_bytes!("../icons/icon.png"))?;
+            let icon=tauri::image::Image::from_bytes(include_bytes!("../icons/tray.png"))?;
             tauri::tray::TrayIconBuilder::new().icon(icon).tooltip("AERIS — システムモニター").menu(&menu).show_menu_on_left_click(false)
                 .on_tray_icon_event(|tray,event| { if matches!(event,tauri::tray::TrayIconEvent::Click { button: tauri::tray::MouseButton::Left, button_state: tauri::tray::MouseButtonState::Up, .. }) { reveal_main(tray.app_handle()); } })
                 .on_menu_event(|app,event| match event.id.as_ref() {

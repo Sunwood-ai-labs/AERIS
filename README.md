@@ -83,6 +83,8 @@ cargo test --release --manifest-path src-tauri/Cargo.toml
 
 ## 🎨 デザインとライセンス
 
+AERISのアイコンは「A」と空気の流れを組み合わせた専用SVGです。[ベクター原本](brand/aeris-mark.svg)を編集し、`npm run icons` でアプリ・トレイ・Windows用ICO・READMEバナーを再生成できます。画面内ロゴはSVGを直接表示します。[アイコンの管理方法](brand/README.md)
+
 背景画像は組み込みimagegenで生成したRGBA PNGを同梱しています。[生成の記録](docs/backgrounds.md)を参照してください。
 
 ソースコードは [MIT License](LICENSE)。依存ライブラリ・WebView2に関する情報は [THIRD_PARTY.md](THIRD_PARTY.md) に記載しています。

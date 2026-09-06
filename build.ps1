@@ -26,6 +26,7 @@ try {
     }
     Copy-Item -LiteralPath 'README.md','README.en.md','LICENSE','THIRD_PARTY.md' -Destination $releaseDirectory -Force
     Copy-Item -LiteralPath 'docs' -Destination $releaseDirectory -Recurse -Force
+    Copy-Item -LiteralPath 'brand' -Destination $releaseDirectory -Recurse -Force
     if (-not $SkipTests) {
         $selfTestOutput = Join-Path $projectDirectory 'artifacts\native-self-test.json'
         New-Item -ItemType Directory -Path (Split-Path $selfTestOutput) -Force | Out-Null

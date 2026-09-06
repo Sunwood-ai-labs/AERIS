@@ -1,6 +1,6 @@
 {
   "name": "aeris-task-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,8 +9,21 @@
     "test": "node --import tsx --test tests/*.test.ts",
     "tauri": "tauri",
     "desktop": "tauri dev",
-    "release": "tauri build --no-bundle"
+    "release": "tauri build --no-bundle",
+    "icons": "node tools/build-icons.mjs",
+    "prebuild": "npm run icons",
+    "predesktop": "npm run icons"
   },
-  "dependencies": { "@tauri-apps/api": "^2.10.1", "lucide": "^0.577.0" },
-  "devDependencies": { "@tauri-apps/cli": "^2.10.1", "vite": "^7.3.1", "typescript": "^5.9.3", "tsx": "^4.21.0", "@types/node": "^24.0.0" }
+  "dependencies": {
+    "@tauri-apps/api": "^2.10.1",
+    "lucide": "^0.577.0"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@tauri-apps/cli": "^2.10.1",
+    "@types/node": "^24.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
 }
