@@ -52,6 +52,8 @@ AERISの履歴はWindowsが保持する過去のUWP履歴とは別です。タ�
 
 ### パフォーマンスとプロセス詳細
 
+![CPU・メモリの色付き比較バーと最多使用アプリへのショートカット](docs/screenshots/usage-bars.png)
+
 ![論理CPUごとの使用率・周波数と物理メモリ・スワップ](docs/screenshots/performance.png)
 
 <details>
@@ -72,22 +74,22 @@ AERISの履歴はWindowsが保持する過去のUWP履歴とは別です。タ�
 
 ## 📦 ダウンロードと起動
 
-[Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest) から、自分のOS・CPUに合うファイルを選んでください。以下の `1.2.0` はバージョン番号です。
+[Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest) から、自分のOS・CPUに合うファイルを選んでください。以下の `1.2.1` はバージョン番号です。
 
 | OS / CPU | 配布ファイル | 起動方法 |
 |---|---|---|
-| Windows x64 | `AERIS-1.2.0-windows-x64-setup.exe` | インストーラーを実行 |
-| Windows x64・ポータブル | `AERIS-1.2.0-windows-x64-portable.zip` | フォルダー全体を展開して `AERIS/AERIS.exe` を起動 |
-| macOS・Apple Silicon | `AERIS-1.2.0-macos-arm64.dmg` | 開いてAERISをApplicationsへコピー |
-| macOS・Intel | `AERIS-1.2.0-macos-x64.dmg` | 開いてAERISをApplicationsへコピー |
-| Linux x64・Debian/Ubuntu系 | `AERIS-1.2.0-linux-x64.deb` | `sudo apt install ./AERIS-1.2.0-linux-x64.deb` |
-| Linux x64・AppImage | `AERIS-1.2.0-linux-x64.AppImage` | 実行権限を付けて起動 |
+| Windows x64 | `AERIS-1.2.1-windows-x64-setup.exe` | インストーラーを実行 |
+| Windows x64・ポータブル | `AERIS-1.2.1-windows-x64-portable.zip` | フォルダー全体を展開して `AERIS/AERIS.exe` を起動 |
+| macOS・Apple Silicon | `AERIS-1.2.1-macos-arm64.dmg` | 開いてAERISをApplicationsへコピー |
+| macOS・Intel | `AERIS-1.2.1-macos-x64.dmg` | 開いてAERISをApplicationsへコピー |
+| Linux x64・Debian/Ubuntu系 | `AERIS-1.2.1-linux-x64.deb` | `sudo apt install ./AERIS-1.2.1-linux-x64.deb` |
+| Linux x64・AppImage | `AERIS-1.2.1-linux-x64.AppImage` | 実行権限を付けて起動 |
 
 Windowsでは [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) が必要です。ZIPにDLLが含まれる場合は実行ファイルと一緒に配置してください。macOSは12.0以降を対象とし、OSのWKWebViewを利用します。LinuxはUbuntu 22.04でビルドし、WebKitGTK 4.1を使用します。DEBは依存パッケージをAPTで解決します。AppImageの起動には環境に応じてFUSE 2互換ライブラリが必要です。
 
 ```sh
-chmod +x AERIS-1.2.0-linux-x64.AppImage
-./AERIS-1.2.0-linux-x64.AppImage
+chmod +x AERIS-1.2.1-linux-x64.AppImage
+./AERIS-1.2.1-linux-x64.AppImage
 ```
 
 各ファイルにSHA-256チェックサムを同梱しています。Windows版はAuthenticode未署名、macOS版はアドホック署名でAppleの公証は未実施です。そのためOSの初回起動確認が表示されることがあります。
@@ -107,6 +109,10 @@ chmod +x AERIS-1.2.0-linux-x64.AppImage
 | 完全終了 | 設定またはトレイメニュー → AERISを終了 |
 
 `Ctrl+F` で検索、`F5` で即時更新、`Esc` でダイアログを閉じる / 検索をクリア。
+
+**色とバーの見方：** CPUはシアン、メモリは紫。一覧のバーは、全プロセス中の各列の最多使用量を基準に比較し、検索しても基準を変えません。数値は実際のCPU使用率・常駐メモリ量です。「最多」のアプリを押すと該当PIDに絞り込めます。ガジェットのCPU／MEMで上位3プロセスを切り替えられます。
+
+プロセスのCPUが全体の25%／50%以上、またはメモリが物理容量の10%／20%以上の場合は黄／赤と警告マークを表示します。全体のCPU・メモリと論理CPUのメーターは70%／90%で色が変わります。これは視覚的な目安で、異常の診断ではありません。各バーにマウスを重ねるとCPU使用率・物理メモリ容量に対する割合を確認できます。
 
 設定はユーザーのアプリ設定フォルダーに保存します。初期値はパネル70%、画像24%。背景の切り替えは15秒・30秒・1分・5分。設定はメイン画面とガジェットに共通で、ランダム順序は各ウィンドウで独立します。OS起動時の自動起動登録は行いません。
 
@@ -146,7 +152,7 @@ WindowsでMinGW-w64を使う場合はGNU toolchainをインストールし、Pow
 
 1. `main`へのコード変更・Pull Request・手動実行で、フロントエンドとRustの単体テスト、アイコン再生成の一致確認、ネイティブビルド、統合テストを実行。
 2. インストーラー・ポータブル版・チェックサムをActionsのArtifactsへ保存（14日間）。README・スクリーンショットだけの変更ではネイティブ再ビルドを省略します。
-3. `v1.2.0` のようなバージョンタグをpushすると全構成をビルドし、**全構成の成功後**にGitHub Releaseを作成・公開します。
+3. `v1.2.1` のようなバージョンタグをpushすると全構成をビルドし、**全構成の成功後**にGitHub Releaseを作成・公開します。
 
 リリース時は `package.json` / `package-lock.json`、`src-tauri/Cargo.toml` / `Cargo.lock`、`src-tauri/tauri.conf.json` と画面のバージョン表記を揃えてからタグを付けます。秘密鍵や署名証明書は現在不要です。公証・正式コード署名は別途設定が必要です。
 

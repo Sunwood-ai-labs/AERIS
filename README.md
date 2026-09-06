@@ -51,6 +51,8 @@ These are captures of the implemented UI in its browser preview, using sample me
 
 ### Performance and process details
 
+![Color-coded CPU and memory comparison bars with top-consumer shortcuts](docs/screenshots/usage-bars.png)
+
 ![Logical CPU usage, frequency, physical memory and swap](docs/screenshots/performance.png)
 
 <details>
@@ -71,22 +73,22 @@ These are captures of the implemented UI in its browser preview, using sample me
 
 ## 📦 Download and run
 
-Choose the package for your OS and CPU from [Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest). `1.2.0` below is the version number.
+Choose the package for your OS and CPU from [Releases](https://github.com/Sunwood-ai-labs/AERIS/releases/latest). `1.2.1` below is the version number.
 
 | OS / CPU | File | Install / launch |
 |---|---|---|
-| Windows x64 | `AERIS-1.2.0-windows-x64-setup.exe` | Run the installer |
-| Windows x64 portable | `AERIS-1.2.0-windows-x64-portable.zip` | Extract the whole folder and run `AERIS/AERIS.exe` |
-| macOS Apple Silicon | `AERIS-1.2.0-macos-arm64.dmg` | Open and copy AERIS to Applications |
-| macOS Intel | `AERIS-1.2.0-macos-x64.dmg` | Open and copy AERIS to Applications |
-| Linux x64 Debian/Ubuntu | `AERIS-1.2.0-linux-x64.deb` | `sudo apt install ./AERIS-1.2.0-linux-x64.deb` |
-| Linux x64 AppImage | `AERIS-1.2.0-linux-x64.AppImage` | Make executable and launch |
+| Windows x64 | `AERIS-1.2.1-windows-x64-setup.exe` | Run the installer |
+| Windows x64 portable | `AERIS-1.2.1-windows-x64-portable.zip` | Extract the whole folder and run `AERIS/AERIS.exe` |
+| macOS Apple Silicon | `AERIS-1.2.1-macos-arm64.dmg` | Open and copy AERIS to Applications |
+| macOS Intel | `AERIS-1.2.1-macos-x64.dmg` | Open and copy AERIS to Applications |
+| Linux x64 Debian/Ubuntu | `AERIS-1.2.1-linux-x64.deb` | `sudo apt install ./AERIS-1.2.1-linux-x64.deb` |
+| Linux x64 AppImage | `AERIS-1.2.1-linux-x64.AppImage` | Make executable and launch |
 
 Windows requires [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/). Keep any DLLs included in the ZIP beside the executable. macOS targets 12.0+ and uses system WKWebView. Linux packages are built on Ubuntu 22.04 using WebKitGTK 4.1. APT resolves DEB dependencies; AppImage may require a FUSE 2 compatibility library on your distribution.
 
 ```sh
-chmod +x AERIS-1.2.0-linux-x64.AppImage
-./AERIS-1.2.0-linux-x64.AppImage
+chmod +x AERIS-1.2.1-linux-x64.AppImage
+./AERIS-1.2.1-linux-x64.AppImage
 ```
 
 Individual SHA-256 files accompany every package. Windows builds are not Authenticode-signed. macOS builds use ad-hoc signing and are not Apple-notarized, so the OS may prompt or restrict first launch.
@@ -105,6 +107,10 @@ Individual SHA-256 files accompany every package. Windows builds are not Authent
 | AERISを終了 | Quit from settings or the tray menu |
 
 Keyboard shortcuts: `Ctrl+F` search, `F5` refresh, `Esc` close a dialog or clear search.
+
+**Resource colors:** CPU is cyan and memory is violet. Process bars compare against the largest process in each column across the entire snapshot; filtering does not change that scale. Numbers retain actual CPU percentages and resident-memory amounts. Top-consumer shortcuts filter to the relevant PID, and the gadget's CPU/MEM buttons switch its top-three list.
+
+Amber/red and a warning symbol indicate process CPU at 25%/50% of total CPU capacity, or process memory at 10%/20% of physical capacity. Overall CPU/memory and logical-CPU meters use 70%/90% thresholds. These are visual guides, not diagnoses of a problem. Hover a process bar for its physical-memory share or CPU percentage.
 
 Preferences persist in the user's application settings directory. Defaults: 70% panel opacity, 24% image opacity. Background intervals: 15 seconds, 30 seconds, 1 minute, or 5 minutes. Appearance preferences are shared, while each window shuffles independently. Automatic startup at login is not registered.
 
@@ -142,7 +148,7 @@ For MinGW-w64 on Windows, install the GNU Rust toolchain and set `$env:RUSTUP_TO
 
 1. Code pushes to `main`, pull requests, and manual runs execute frontend/Rust unit tests, deterministic icon checks, native builds, and integration tests.
 2. Installable packages, the Windows portable ZIP, and checksums are uploaded as Actions artifacts for 14 days. README/screenshot-only changes skip native rebuilds.
-3. Pushing a version tag such as `v1.2.0` builds every target and automatically publishes a GitHub Release **only after every target succeeds**.
+3. Pushing a version tag such as `v1.2.1` builds every target and automatically publishes a GitHub Release **only after every target succeeds**.
 
 Before tagging, align versions in `package.json` / `package-lock.json`, `src-tauri/Cargo.toml` / `Cargo.lock`, `src-tauri/tauri.conf.json`, and UI labels. No signing secrets are currently needed; official code signing and notarization require separate configuration.
 
