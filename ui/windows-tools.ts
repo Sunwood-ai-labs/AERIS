@@ -1,8 +1,7 @@
 import {invoke} from '@tauri-apps/api/core';
-import {escapeHtml as esc,bytes} from './model';
+import {escapeHtml as esc} from './model';
 type Service={name:string;displayName:string;state:string;pid:number;startMode:string;protected:boolean};
 type Startup={id:string;name:string;command:string;scope:string;enabled:boolean|null;kind:string};
-type Gpu={devices:{Name:string;DriverVersion:string;AdapterRAM:number}[];engines:{Name:string;UtilizationPercentage:number}[];memory:{Name:string;DedicatedUsage:number;SharedUsage:number}[];error:string|null};
 const array=<T>(value:T|T[]|null):T[]=>Array.isArray(value)?value:value?[value]:[];
 export function windowsTools(native:boolean,notify:(s:string)=>void){
  let services:Service[]=[],startup:Startup[]=[],active='services',requested='services',query='',busy=false;
@@ -30,14 +29,6 @@ export function windowsTools(native:boolean,notify:(s:string)=>void){
   if(kind==='confirm'&&pending){b.disabled=true;try{if(!native){notify('プレビューでは変更しません');dialog.close();return;}await invoke('system_tool',pending);dialog.close();pending=null;notify('変更しました');await load(active);}catch(e){dialog.querySelector('#tool-error')!.textContent=String(e);}finally{b.disabled=false;}}
  }catch(e){notify(String(e));}});
  return {load,priority:(request:object)=>confirm('priority',request,'プロセスの優先度を変更しますか？')};
-}
-
-export async function gpuDetails(native:boolean):Promise<string>{
- if(!native)return '<p>Demo GPU · 3D 18% · 専用メモリ 1.2 GB（サンプル）</p>';
- const gpu=await invoke<Gpu>('system_tool',{operation:'gpus',request:{}});
- const engines=new Map<string,number>();
- for(const e of array(gpu.engines)){const match=e.Name.match(/luid_(.+?)_phys_(\d+)_eng_(\d+)_engtype_(.+)$/);if(match){const key=`${match[1]} / GPU ${match[2]} / ${match[4]} / engine ${match[3]}`;engines.set(key,(engines.get(key)??0)+Number(e.UtilizationPercentage));}}
- return `<p class="muted">更新ボタンを押した時点のGPUカウンターです。LUIDはWindowsのアダプター識別子です。</p>${array(gpu.devices).map(d=>`<h3>${esc(d.Name)}</h3><p class="muted">Driver ${esc(d.DriverVersion)}</p>`).join('')}${gpu.error?`<p role="status">カウンター取得不可: ${esc(gpu.error)}</p>`:''}<div class="resource-columns">${[...engines].filter(([,v])=>v>0).map(([name,v])=>`<div class="core-tile"><span>${esc(name)}</span><strong>${Math.min(100,v).toFixed(1)}%</strong></div>`).join('')||'<p class="muted">使用中のGPUエンジンはありません / 未取得</p>'}</div>${array(gpu.memory).map(m=>`<p>${esc(m.Name)} · 専用 ${bytes(Number(m.DedicatedUsage))} / 共有 ${bytes(Number(m.SharedUsage))}</p>`).join('')}`;
 }
 
 export async function sessionDetails(native:boolean):Promise<string>{

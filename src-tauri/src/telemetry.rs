@@ -4,6 +4,7 @@ use sysinfo::{Disks, Networks, System};
 #[derive(Clone, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Performance {
+    pub gpu: Option<super::gpu::Snapshot>,
     pub cpus: Vec<Core>,
     pub total_swap: u64,
     pub used_swap: u64,
@@ -22,6 +23,7 @@ pub struct Interface { name: String, mac: String, download: f64, upload: f64, to
 
 pub fn sample(system: &System, disks: &Disks, networks: &Networks, elapsed: f64) -> Performance {
     Performance {
+        gpu: None,
         cpus: system.cpus().iter().map(|c| Core { name: c.name().into(), usage: c.cpu_usage().clamp(0.,100.), frequency: c.frequency() }).collect(),
         total_swap: system.total_swap(), used_swap: system.used_swap(),
         disks: disks.iter().map(|d| { let io=d.usage(); Disk {

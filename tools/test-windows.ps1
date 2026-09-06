@@ -7,7 +7,6 @@ $fixtureName="AERIS_Verification_$fixtureId"
 $fixtureDir=Join-Path $repo "artifacts\windows-fixture-$fixtureId"
 New-Item -ItemType Directory -Path $fixtureDir -Force|Out-Null
 $scriptText=Get-Content -LiteralPath (Join-Path $repo 'src-tauri\src\windows_tools.ps1') -Raw
-$gpuText=Get-Content -LiteralPath (Join-Path $repo 'src-tauri\src\gpu.cs') -Raw
 function Invoke-Tool([string]$Operation,[object]$Request) {
     $start=[Diagnostics.ProcessStartInfo]::new()
     $start.FileName=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -15,7 +14,6 @@ function Invoke-Tool([string]$Operation,[object]$Request) {
     $start.UseShellExecute=$false;$start.CreateNoWindow=$true;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true
     $start.StandardOutputEncoding=[Text.UTF8Encoding]::new($false);$start.StandardErrorEncoding=[Text.UTF8Encoding]::new($false)
     $start.EnvironmentVariables['AERIS_REQUEST']=@{operation=$Operation;request=$Request}|ConvertTo-Json -Depth 6 -Compress
-    $start.EnvironmentVariables['AERIS_GPU_SOURCE']=$gpuText
     $process=[Diagnostics.Process]::Start($start)
     try {$stdout=$process.StandardOutput.ReadToEndAsync();$stderr=$process.StandardError.ReadToEndAsync();if(!$process.WaitForExit(25000)){$process.Kill();throw 'Management test timed out'}
         if($process.ExitCode){throw $stderr.Result};$parsed=$stdout.Result|ConvertFrom-Json;foreach($item in @($parsed)){Write-Output $item}

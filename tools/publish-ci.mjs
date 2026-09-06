@@ -15,7 +15,8 @@ for(const suffix of ['windows-x64-setup.exe','windows-x64-portable.zip','macos-a
 }
 function gh(args){const result=spawnSync('gh',args,{stdio:'inherit'});if(result.status!==0)throw Error(`GitHub release command failed (${result.status})`);}
 const notes=`AERIS ${version}\n\nWindows x64 / macOS Apple Silicon + Intel / Linux x64.\n\nAll platform packages are built and integration-tested by GitHub Actions. The UI is Japanese. See README for installation, screenshots, and platform differences.\n\nmacOS builds use ad-hoc signing and are not notarized. Windows installers are not Authenticode-signed.\n\nIndividual .sha256 files are included.\n`;
-fs.writeFileSync('release/release-notes.md',notes);
+const versionNotes=path.join('docs','releases',`${version}.md`);
+fs.writeFileSync('release/release-notes.md',fs.existsSync(versionNotes)?fs.readFileSync(versionNotes,'utf8'):notes);
 const exists=spawnSync('gh',['release','view',tag],{stdio:'ignore'}).status===0;
 if(!exists)gh(['release','create',tag,'--verify-tag','--draft','--title',`AERIS ${version}`,'--notes-file','release/release-notes.md']);
 gh(['release','upload',tag,...files.map(name=>path.join('release/ci',name)),'--clobber']);

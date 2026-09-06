@@ -43,10 +43,15 @@ pub async fn restart_explorer(pid:u32,start_time:u64) -> Result<(),String> {
     tauri::async_runtime::spawn_blocking(move||{
         let path=target(pid,start_time)?;
         let expected=PathBuf::from(std::env::var_os("SystemRoot").ok_or("Windowsの場所が取得できません")?).join("explorer.exe");
-        if !path.to_string_lossy().eq_ignore_ascii_case(&expected.to_string_lossy()){return Err("Windows Explorerではありません".into());}
+        validate_explorer(&path,&expected)?;
         super::terminate(pid,start_time)?;
         spawn(&expected.to_string_lossy(),&[]).map(|_|()).map_err(|e|format!("Explorerを終了しましたが再起動に失敗しました。「新しいタスク」で explorer.exe を起動してください: {e}"))
     }).await.map_err(|e|e.to_string())?
+}
+
+#[cfg(any(target_os="windows",test))]
+fn validate_explorer(path:&std::path::Path,expected:&std::path::Path)->Result<(),String>{
+    if path.to_string_lossy().eq_ignore_ascii_case(&expected.to_string_lossy()){Ok(())}else{Err("Windows Explorerではありません".into())}
 }
 
 /// Children first, with a visited set to tolerate corrupt/stale parent cycles.
@@ -85,4 +90,10 @@ mod tests {
     }
     #[test] fn invalid_launch_does_not_spawn() {assert!(spawn("",&[]).is_err());assert!(spawn("app",&["bad\0arg".into()]).is_err());}
     #[test] fn stale_process_identity_cannot_reveal_path() {assert!(target(std::process::id(),u64::MAX).is_err());}
+    #[test] fn explorer_restart_requires_the_windows_executable() {
+        let expected=std::path::Path::new("C:\\Windows\\explorer.exe");
+        assert!(validate_explorer(std::path::Path::new("c:\\WINDOWS\\Explorer.exe"),expected).is_ok());
+        assert!(validate_explorer(std::path::Path::new("C:\\Apps\\explorer.exe"),expected).is_err());
+        assert!(validate_explorer(std::path::Path::new("C:\\Windows\\notepad.exe"),expected).is_err());
+    }
 }

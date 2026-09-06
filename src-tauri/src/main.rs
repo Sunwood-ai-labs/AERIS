@@ -1,6 +1,7 @@
 #![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
 mod telemetry;
+mod gpu;
 mod actions;
 mod windows_tools;
 use serde::{Deserialize, Serialize};
@@ -37,7 +38,7 @@ impl Default for Snapshot {
         cpu_name: String::new(), cores: 0, uptime: 0, host: System::host_name().unwrap_or_default(), os: System::long_os_version().unwrap_or_else(|| std::env::consts::OS.into()),
         paused: false, ready: false, settings: Settings::default(), error: None, performance: telemetry::Performance::default() } }
 }
-struct Shared { snapshot: Snapshot, settings: Settings, paused: bool, force: bool, settings_path: PathBuf }
+struct Shared { snapshot: Snapshot, settings: Settings, paused: bool, force: bool, gpu_requested: bool, settings_path: PathBuf }
 type SharedState = Arc<Mutex<Shared>>;
 
 fn protected(pid: u32, name: &str) -> bool {
@@ -47,14 +48,14 @@ fn protected(pid: u32, name: &str) -> bool {
 }
 fn loopback(name: &str) -> bool { let name=name.to_ascii_lowercase(); name=="lo" || name=="lo0" || name.contains("loopback") }
 fn timestamp() -> u64 { SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_millis() as u64 }
-struct Monitor { system: System, networks: Networks, disks: Disks, users: Users, last: Instant, history: VecDeque<Sample>, primed: bool }
+struct Monitor { system: System, networks: Networks, disks: Disks, users: Users, last: Instant, history: VecDeque<Sample>, primed: bool, gpu: gpu::Monitor, gpu_active: bool }
 impl Monitor {
     fn new() -> Self {
         let mut system = System::new();
         system.refresh_cpu_all();
         system.refresh_memory();
         system.refresh_processes_specifics(ProcessesToUpdate::All, true, process_refresh());
-        Self { system, networks: Networks::new_with_refreshed_list(), disks: Disks::new_with_refreshed_list(), users: Users::new_with_refreshed_list(), last: Instant::now(), history: VecDeque::new(), primed: false }
+        Self { system, networks: Networks::new_with_refreshed_list(), disks: Disks::new_with_refreshed_list(), users: Users::new_with_refreshed_list(), last: Instant::now(), history: VecDeque::new(), primed: false, gpu: gpu::Monitor::default(), gpu_active: false }
     }
     fn sample(&mut self, settings: Settings) -> Snapshot {
         self.system.refresh_cpu_all();
@@ -80,13 +81,17 @@ impl Monitor {
         }).collect();
         processes.sort_by(|a,b| b.cpu.total_cmp(&a.cpu).then(b.memory.cmp(&a.memory)));
         self.primed = true;
+        let mut performance=telemetry::sample(&self.system,&self.disks,&self.networks,elapsed);
+        performance.gpu=if self.gpu_active{Some(self.gpu.sample())}else{self.gpu.reset();None};
         Snapshot { sample, history: self.history.iter().cloned().collect(), processes, total_memory: total, used_memory: used,
             cpu_name: self.system.cpus().first().map(|x| x.brand().trim().to_string()).unwrap_or_default(), cores, uptime: System::uptime(),
-            host: System::host_name().unwrap_or_default(), os: System::long_os_version().unwrap_or_default(), paused: false, ready: true, settings, error: None, performance: telemetry::sample(&self.system,&self.disks,&self.networks,elapsed) }
+            host: System::host_name().unwrap_or_default(), os: System::long_os_version().unwrap_or_default(), paused: false, ready: true, settings, error: None, performance }
     }
 }
 fn process_refresh() -> ProcessRefreshKind { ProcessRefreshKind::nothing().with_cpu().with_memory().with_disk_usage().with_user(UpdateKind::OnlyIfNotSet).with_cmd(UpdateKind::OnlyIfNotSet).with_exe(UpdateKind::OnlyIfNotSet) }
 
+#[tauri::command]
+fn set_gpu_active(window: WebviewWindow,state:State<SharedState>,active:bool)->Result<(),String>{if window.label()!="main"{return Err("メイン画面専用です".into());}let mut s=state.lock().map_err(|e|e.to_string())?;s.gpu_requested=active;s.force=true;Ok(())}
 #[tauri::command]
 fn get_snapshot(state: State<SharedState>) -> Result<Snapshot, String> {
     let s=state.lock().map_err(|e|e.to_string())?;
@@ -207,17 +212,30 @@ async fn end_process(state: State<'_, SharedState>, pid: u32, start_time: u64) -
 
 fn main() {
     let args: Vec<String>=std::env::args().collect();
+    if let Some(i)=args.iter().position(|x|x=="--test-arguments") {
+        fs::write(args.get(i+1).expect("argument fixture output"),serde_json::to_vec(&args[i+2..]).unwrap()).unwrap();return;
+    }
     if args.iter().any(|x| x=="--test-parent") { let _child=std::process::Command::new(std::env::current_exe().unwrap()).arg("--test-child").spawn().unwrap();loop {thread::sleep(Duration::from_millis(100));} }
     if args.iter().any(|x| x=="--test-child") { loop { std::hint::black_box((0..10000u64).sum::<u64>()); thread::sleep(Duration::from_millis(10)); } }
     if let Some(i)=args.iter().position(|x| x=="--self-test") {
         let output=args.get(i+1).expect("self-test requires an output path");
         let mut monitor=Monitor::new(); thread::sleep(Duration::from_millis(1200));
-        let first=monitor.sample(Settings::default()); thread::sleep(Duration::from_millis(1200)); let snapshot=monitor.sample(Settings::default());
+        monitor.gpu_active=args.iter().any(|a|a=="--gpu");let first=monitor.sample(Settings::default()); thread::sleep(Duration::from_millis(1200)); let snapshot=monitor.sample(Settings::default());
         assert!(first.total_memory>0 && snapshot.processes.len()>0 && snapshot.sample.cpu>=0. && snapshot.sample.cpu<=100.);
         assert!(snapshot.processes.iter().any(|p|p.pid==std::process::id()));
         assert_eq!(snapshot.performance.cpus.len(),snapshot.cores);
         assert!(snapshot.performance.cpus.iter().all(|c| c.usage.is_finite() && (0.0..=100.0).contains(&c.usage)));
         assert!(terminate(std::process::id(),0).is_err());
+        let argument_output=std::env::temp_dir().join(format!("aeris-arguments-{}-{}.json",std::process::id(),snapshot.sample.time));
+        let expected_args=vec!["space inside".to_string(),"日本語".into(),"\"quoted\"".into(),"$(must-stay-literal); & |".into(),String::new()];
+        let mut launch_args=vec!["--test-arguments".into(),argument_output.to_string_lossy().into_owned()];launch_args.extend(expected_args.clone());
+        actions::spawn(&std::env::current_exe().unwrap().to_string_lossy(),&launch_args).expect("new task launches fixture");
+        let deadline=Instant::now();
+        let actual_args=loop {
+            if let Ok(bytes)=fs::read(&argument_output){if let Ok(value)=serde_json::from_slice::<Vec<String>>(&bytes){break value;}}
+            assert!(deadline.elapsed()<Duration::from_secs(10),"new-task fixture did not return");thread::sleep(Duration::from_millis(50));
+        };
+        let _=fs::remove_file(&argument_output);assert_eq!(actual_args,expected_args,"arguments must reach the executable literally");
         let mut child=std::process::Command::new(std::env::current_exe().unwrap()).arg("--test-child").spawn().unwrap();
         thread::sleep(Duration::from_millis(500)); let probe=monitor.sample(Settings::default());
         let row=probe.processes.iter().find(|p|p.pid==child.id()).expect("test child detected");
@@ -252,7 +270,7 @@ fn main() {
                 }
             }
             let settings: Settings=fs::read(&settings_path).ok().and_then(|b|serde_json::from_slice(&b).ok()).filter(Settings::valid).unwrap_or_default();
-            let state: SharedState=Arc::new(Mutex::new(Shared { snapshot: Snapshot::default(), settings, paused: false, force: true, settings_path }));
+            let state: SharedState=Arc::new(Mutex::new(Shared { snapshot: Snapshot::default(), settings, paused: false, force: true, gpu_requested: false, settings_path }));
             app.manage(state.clone());
             use tauri::menu::{Menu, MenuItem};
             let menu=Menu::with_items(app,&[
@@ -285,11 +303,11 @@ fn main() {
                         visible |= active;
                         if window_activity.get(label)!=Some(&active) { set_webview_memory(window,active); let _=window.emit("window-activity",active); window_activity.insert(label.clone(),active); }
                     }
-                    let settings={ let mut s=match state.lock(){Ok(s)=>s,Err(_)=>break};
+                    let (settings,gpu_active)={ let mut s=match state.lock(){Ok(s)=>s,Err(_)=>break};
                         if !s.force && (s.paused || !visible || last.elapsed()<Duration::from_secs(s.settings.interval)) { continue; }
-                        s.force=false; s.settings.clone()
+                        s.force=false; (s.settings.clone(),s.gpu_requested && windows.get("main").is_some_and(|w|w.is_visible().unwrap_or(false)&&!w.is_minimized().unwrap_or(false)))
                     };
-                    let snapshot=monitor.sample(settings); last=Instant::now();
+                    monitor.gpu_active=gpu_active;let snapshot=monitor.sample(settings); last=Instant::now();
                     if let Ok(mut s)=state.lock(){s.snapshot=snapshot;} broadcast(&handle,&state);
                 }
             });
@@ -303,7 +321,7 @@ fn main() {
             if window.label()=="main" { let _=window.minimize(); return; }
             let _=window.hide();
         } })
-        .invoke_handler(tauri::generate_handler![actions::restart_explorer,windows_tools::system_tool,actions::run_task,actions::reveal_process,actions::end_process_tree,get_snapshot,set_paused,refresh_now,save_settings,show_gadget,show_main,hide_gadget,quit_app,end_process])
+        .invoke_handler(tauri::generate_handler![set_gpu_active,actions::restart_explorer,windows_tools::system_tool,actions::run_task,actions::reveal_process,actions::end_process_tree,get_snapshot,set_paused,refresh_now,save_settings,show_gadget,show_main,hide_gadget,quit_app,end_process])
         .build(tauri::generate_context!()).expect("AERIS could not start")
         .run(|_app,_event| {
             #[cfg(target_os = "macos")]

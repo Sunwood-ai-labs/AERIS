@@ -25,13 +25,13 @@ Version 1.2 adds the main everyday Task Manager workflows:
 | Processes / details | Sort CPU, memory and disk I/O; inspect owner, parent PID, command-line arguments, start time and CPU time; open file location |
 | Process actions | Run an executable with explicit arguments; terminate a process or its children; change priority and restart Explorer on Windows |
 | Performance | Per-logical-CPU usage/frequency, physical memory and swap, disk capacity/read/write rates, individual network adapters |
-| GPU (Windows) | On-demand PDH engine utilization and dedicated/shared memory counters; unavailable counters show an error |
+| GPU (Windows) | Live PDH utilization and dedicated/shared memory while the performance page is visible; unavailable counters show an error |
 | App history | CPU time since first observation and peak observed memory, including exited processes; resettable in-window history |
 | Users | Owner resource totals with process filtering; on-demand Windows signed-in session inventory |
 | Startup (Windows) | Enable/disable Run registry and Startup-folder entries without changing their launch commands |
 | Services (Windows) | State, PID, startup mode, search, start/stop/restart, and critical-service protection |
 
-Management actions require confirmation in the app. Access-denied errors are reported without silently elevating the app. Startup/service/GPU/session inventories are requested on demand, so they do not add a polling process while the gadget is idle. Windows management requires Windows PowerShell 5.1 and the relevant OS providers. Startup state uses Windows's `StartupApproved` registry representation; unknown states are read-only. Previous values are backed up under `HKCU\Software\AERIS\StartupStateBackup`.
+Management actions require confirmation in the app. Access-denied errors are reported without silently elevating the app. Startup/service/session inventories are requested on demand, so they do not add a polling process while the gadget is idle. Windows management requires Windows PowerShell 5.1 and the relevant OS providers. Startup state uses Windows's `StartupApproved` registry representation; unknown states are read-only. Previous values are backed up under `HKCU\Software\AERIS\StartupStateBackup`.
 
 AERIS history is not Windows's historical UWP usage database. Scheduled tasks, packaged-app startup tasks, startup impact scoring, process network attribution, efficiency mode, affinity, dumps and user logoff are not implemented. Some process fields are inaccessible without permission. See the [feature verification checklist](docs/task-manager-coverage.md).
 
@@ -48,6 +48,19 @@ These are captures of the implemented UI in its browser preview, using sample me
 | Desktop gadget | Mini-bar |
 |---|---|
 | <img src="docs/screenshots/gadget.png" alt="340×520 desktop gadget" width="340"> | <img src="docs/screenshots/mini.png" alt="560×76 mini-bar inside the browser preview" width="560"> |
+
+### Performance and process details
+
+![Logical CPU usage, frequency, physical memory and swap](docs/screenshots/performance.png)
+
+<details>
+<summary>GPU, network adapters, and process management</summary>
+
+![GPU utilization and memory, with individual network adapters](docs/screenshots/gpu-network.png)
+
+![Process identity, owner, I/O, command line and management actions](docs/screenshots/process-details.png)
+
+</details>
 
 <details>
 <summary>Background and transparency settings</summary>
@@ -139,7 +152,7 @@ CPU is execution time normalized across logical processors; it may differ from W
 
 AERIS protects itself and known critical OS processes, checks PID and start time before termination, and requires confirmation. Some process information/actions remain unavailable without sufficient access.
 
-`--self-test <output.json>` checks live sampling, protection, and termination of an exclusively test-created child. It does not test GUI rendering. Its output includes machine process names/paths and is excluded from Git and public CI artifacts.
+`--self-test <output.json>` checks live sampling, literal new-task arguments, protection, and termination of exclusively test-created children and a process tree. Add `--gpu` to include available Windows GPU counters in the private sample. It does not test GUI rendering. Its output includes machine process names/paths and is excluded from Git and public CI artifacts. Windows CI also exercises priority changes, a disposable startup entry, and start/restart/stop of a disposable service.
 
 ## 🎨 Design and license
 

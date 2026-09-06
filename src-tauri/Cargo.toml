@@ -15,7 +15,7 @@ sysinfo = { version = "0.39", default-features = false, features = ["system", "n
 
 [target.'cfg(target_os = "windows")'.dependencies]
 webview2-com = "0.38.2"
-windows = { version = "0.61", default-features = false, features = ["std"] }
+windows = { version = "0.61", default-features = false, features = ["std", "Win32_System_Performance", "Win32_Graphics_Dxgi", "Win32_Graphics_Dxgi_Common"] }
 
 [profile.release]
 opt-level = "s"

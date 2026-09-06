@@ -90,12 +90,6 @@ public static class AerisSessions {
             } finally {$key.Dispose()}
             @{ok=$true}
         }
-        'gpus' {
-            $devices=@(Get-CimInstance Win32_VideoController -OperationTimeoutSec 10 | Select-Object Name,DriverVersion,AdapterRAM)
-            $engines=@();$memory=@();$counterError=$null
-            try {Add-Type -TypeDefinition $env:AERIS_GPU_SOURCE; $counters=[AerisGpu]::Sample();$engines=$counters.engines;$memory=$counters.memory}catch{$counterError=$_.Exception.Message}
-            @{devices=$devices;engines=$engines;memory=$memory;error=$counterError}
-        }
         'priority' {
             if($request.level -notin @('Idle','BelowNormal','Normal','AboveNormal','High')){throw 'Unsupported priority.'}
             $process=[Diagnostics.Process]::GetProcessById([int]$request.pid)
