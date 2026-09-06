@@ -3,6 +3,8 @@ $ErrorActionPreference = 'Stop'
 $projectDirectory = $PSScriptRoot
 $cargoDirectory = Join-Path $env:USERPROFILE '.cargo\bin'
 $env:PATH = "$cargoDirectory;$env:PATH"
+$previousToolchain = $env:RUSTUP_TOOLCHAIN
+$env:RUSTUP_TOOLCHAIN = 'stable-x86_64-pc-windows-gnu'
 Push-Location $projectDirectory
 try {
     if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) { throw 'Rust is required. Install rustup from https://rustup.rs/' }
@@ -36,4 +38,4 @@ try {
     $zipPath = Join-Path $projectDirectory 'release\AERIS-Windows-x64.zip'
     Compress-Archive -Path $releaseDirectory -DestinationPath $zipPath -Force
     Get-Item (Join-Path $releaseDirectory 'AERIS.exe'), $zipPath | Select-Object FullName,Length
-} finally { Pop-Location }
+} finally { $env:RUSTUP_TOOLCHAIN=$previousToolchain; Pop-Location }

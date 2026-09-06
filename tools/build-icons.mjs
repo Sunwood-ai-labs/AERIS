@@ -38,6 +38,12 @@ sizes.forEach((size,i)=>{
   offset+=pngs[i].length;
 });
 write('src-tauri/icons/icon.ico', Buffer.concat([directory,...pngs]));
+// Modern ICNS containers store PNG representations for Retina app icons.
+const icnsEntries=[[256,'ic08'],[512,'ic09'],[1024,'ic10']].map(([size,type])=>{
+  const png=render(icon,size); const entry=Buffer.alloc(8); entry.write(type,0,'ascii'); entry.writeUInt32BE(png.length+8,4); return Buffer.concat([entry,png]);
+});
+const icnsHeader=Buffer.alloc(8); icnsHeader.write('icns'); icnsHeader.writeUInt32BE(8+icnsEntries.reduce((sum,b)=>sum+b.length,0),4);
+write('src-tauri/icons/icon.icns', Buffer.concat([icnsHeader,...icnsEntries]));
 
 const banner=`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-label="AERIS — A lighter view of your desktop">
 <rect width="1200" height="360" rx="22" fill="#081827"/>

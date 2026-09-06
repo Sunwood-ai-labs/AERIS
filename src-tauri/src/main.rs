@@ -1,4 +1,4 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
 use serde::{Deserialize, Serialize};
 use std::{collections::{HashMap, VecDeque}, fs, path::PathBuf, sync::{Arc, Mutex}, thread, time::{Duration, Instant, SystemTime, UNIX_EPOCH}};
@@ -31,7 +31,7 @@ struct Snapshot {
 }
 impl Default for Snapshot {
     fn default() -> Self { Self { sample: Sample::default(), history: vec![], processes: vec![], total_memory: 0, used_memory: 0,
-        cpu_name: String::new(), cores: 0, uptime: 0, host: System::host_name().unwrap_or_default(), os: System::long_os_version().unwrap_or_else(|| "Windows".into()),
+        cpu_name: String::new(), cores: 0, uptime: 0, host: System::host_name().unwrap_or_default(), os: System::long_os_version().unwrap_or_else(|| std::env::consts::OS.into()),
         paused: false, ready: false, settings: Settings::default(), error: None } }
 }
 struct Shared { snapshot: Snapshot, settings: Settings, paused: bool, force: bool, settings_path: PathBuf }
@@ -39,8 +39,10 @@ type SharedState = Arc<Mutex<Shared>>;
 
 fn protected(pid: u32, name: &str) -> bool {
     pid <= 4 || pid == std::process::id() || matches!(name.to_ascii_lowercase().as_str(),
-        "system" | "registry" | "secure system" | "memory compression" | "smss.exe" | "csrss.exe" | "wininit.exe" | "winlogon.exe" | "services.exe" | "lsass.exe" | "svchost.exe" | "fontdrvhost.exe" | "dwm.exe")
+        "system" | "registry" | "secure system" | "memory compression" | "smss.exe" | "csrss.exe" | "wininit.exe" | "winlogon.exe" | "services.exe" | "lsass.exe" | "svchost.exe" | "fontdrvhost.exe" | "dwm.exe"
+        | "launchd" | "kernel_task" | "windowserver" | "loginwindow" | "init" | "systemd" | "kthreadd" | "xorg" | "xwayland" | "gnome-shell" | "kwin_wayland" | "kwin_x11")
 }
+fn loopback(name: &str) -> bool { let name=name.to_ascii_lowercase(); name=="lo" || name=="lo0" || name.contains("loopback") }
 fn timestamp() -> u64 { SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_millis() as u64 }
 struct Monitor { system: System, networks: Networks, last: Instant, history: VecDeque<Sample>, primed: bool }
 impl Monitor {
@@ -60,7 +62,7 @@ impl Monitor {
         self.last = Instant::now();
         let mut download = 0.; let mut upload = 0.;
         for (name, network) in &self.networks {
-            if !name.to_ascii_lowercase().contains("loopback") { download += network.received() as f64 / elapsed; upload += network.transmitted() as f64 / elapsed; }
+            if !loopback(name) { download += network.received() as f64 / elapsed; upload += network.transmitted() as f64 / elapsed; }
         }
         let cores = self.system.cpus().len().max(1);
         let total = self.system.total_memory();
@@ -166,6 +168,7 @@ fn quit_app(app: tauri::AppHandle) { app.exit(0); }
 
 // Reduce hidden renderer memory without suspending JavaScript or IPC delivery.
 // This is a best-effort WebView2 hint; older runtimes simply keep normal behavior.
+#[cfg(target_os = "windows")]
 fn set_webview_memory(window: &WebviewWindow, active: bool) {
     let _=window.with_webview(move |webview| {
         use windows::core::Interface;
@@ -179,6 +182,8 @@ fn set_webview_memory(window: &WebviewWindow, active: bool) {
         }
     });
 }
+#[cfg(not(target_os = "windows"))]
+fn set_webview_memory(_window: &WebviewWindow, _active: bool) {}
 
 fn terminate(pid: u32, start_time: u64) -> Result<(), String> {
     if pid<=4 || pid==std::process::id() { return Err("このプロセスは保護されています".into()); }
@@ -186,7 +191,7 @@ fn terminate(pid: u32, start_time: u64) -> Result<(), String> {
     system.refresh_processes_specifics(ProcessesToUpdate::Some(&[Pid::from_u32(pid)]),true,process_refresh());
     let p=system.process(Pid::from_u32(pid)).ok_or("プロセスはすでに終了しています")?;
     if p.start_time()!=start_time { return Err("プロセスが入れ替わりました。一覧から選び直してください".into()); }
-    if protected(pid,&p.name().to_string_lossy()) { return Err("Windowsの重要なプロセスは終了できません".into()); }
+    if protected(pid,&p.name().to_string_lossy()) { return Err("OSの重要なプロセスは終了できません".into()); }
     if !p.kill() { return Err("終了できませんでした。権限が不足しているか、保護されたプロセスです".into()); }
     Ok(())
 }
@@ -272,9 +277,20 @@ fn main() {
             });
             Ok(())
         })
-        .on_window_event(|window,event| { if let tauri::WindowEvent::CloseRequested { api, .. }=event { api.prevent_close(); let _=window.hide(); } })
+        .on_window_event(|window,event| { if let tauri::WindowEvent::CloseRequested { api, .. }=event {
+            api.prevent_close();
+            // Some Linux desktops have no tray extension. Keep the main window
+            // reachable in the task switcher instead of hiding it completely.
+            #[cfg(target_os = "linux")]
+            if window.label()=="main" { let _=window.minimize(); return; }
+            let _=window.hide();
+        } })
         .invoke_handler(tauri::generate_handler![get_snapshot,set_paused,refresh_now,save_settings,show_gadget,show_main,hide_gadget,quit_app,end_process])
-        .run(tauri::generate_context!()).expect("AERIS could not start");
+        .build(tauri::generate_context!()).expect("AERIS could not start")
+        .run(|_app,_event| {
+            #[cfg(target_os = "macos")]
+            if let tauri::RunEvent::Reopen { .. }=_event { reveal_main(_app); }
+        });
 }
 
 #[cfg(test)]
@@ -296,4 +312,12 @@ mod tests {
         assert_eq!(loaded.glass_opacity,70); assert_eq!(loaded.image_opacity,24);
     }
     #[test] fn cannot_kill_self() { assert!(terminate(std::process::id(),0).is_err()); }
+    #[test] fn protects_desktop_sessions_on_supported_platforms() {
+        for name in ["launchd","WindowServer","loginwindow","systemd","gnome-shell","kwin_wayland"] { assert!(protected(99999,name)); }
+        assert!(!protected(99999,"aeris-test-child"));
+    }
+    #[test] fn recognizes_loopback_interface_names_across_platforms() {
+        for name in ["lo","lo0","Loopback Pseudo-Interface 1"] { assert!(loopback(name)); }
+        for name in ["en0","eth0","wlan0"] { assert!(!loopback(name)); }
+    }
 }
